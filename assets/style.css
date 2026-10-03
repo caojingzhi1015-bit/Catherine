@@ -561,15 +561,22 @@ body:not(.subpage):not(.case-page) .masthead:not(.is-stuck) .masthead__nav a { o
   padding: 0 var(--pad);
   align-items: start;
 }
+/* 上半部分：WHO AM I 标题 + 右侧证件照，顶部对齐、水平并排 */
+.about__top {
+  grid-column: 1 / span 6;
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(28px, 4.2vw, 60px);
+}
 .about__title {
-  grid-column: 1 / span 5;
+  flex: 0 0 auto;
   font-size: var(--fs-sect);
   display: flex;
   flex-direction: column;
-  margin-left: -.04em;
+  margin-left: 0;
 }
 .about__title span:nth-child(2) { align-self: flex-start; padding-left: .12em; color: var(--turquoise); }
-.about__body { grid-column: 7 / -1; padding-top: clamp(2px, 1.2vw, 18px); }
+.about__body { grid-column: 7 / -1; padding-top: 0; }
 .about__identity {
   display: flex;
   flex-wrap: wrap;
@@ -601,17 +608,18 @@ body:not(.subpage):not(.case-page) .masthead:not(.is-stuck) .masthead__nav a { o
 }
 .about__facts dd { font-size: clamp(12.5px, .96vw, 15px); }
 
-/* 肖像：保留原色调，占比收小 */
+/* 肖像：紧贴 WHO AM I 右侧、顶部对齐；高度≈标题高度（略小） */
 .about__portrait {
-  grid-column: 2 / span 3;
-  margin-top: clamp(22px, 3vw, 46px);
+  flex: 0 0 auto;
+  margin-top: 0;
   position: relative;
 }
 .about__portrait img {
-  width: 100%;
+  height: calc(var(--fs-sect) * 2.37);
+  width: auto;
   aspect-ratio: 3 / 4;
   object-fit: cover;
-  object-position: 50% 20%;
+  object-position: 50% 18%;
 }
 .about__portrait::before {
   content: "";
@@ -622,7 +630,11 @@ body:not(.subpage):not(.case-page) .masthead:not(.is-stuck) .masthead__nav a { o
   z-index: 3;
 }
 .about__portrait figcaption {
+  position: absolute;
+  left: 0;
+  top: 100%;
   margin-top: 9px;
+  white-space: nowrap;
   font-family: var(--f-meta);
   font-size: var(--fs-meta);
   letter-spacing: .2em;
@@ -1220,9 +1232,8 @@ html.no-anim .prow__thumb { display: none !important; }
   .hero__foot { grid-column: 1 / -1; grid-row: 4; align-items: flex-start; text-align: left; }
   .hero__title { white-space: normal; }
 
-  .about__title { grid-column: 1 / -1; }
+  .about__top { grid-column: 1 / -1; gap: clamp(20px, 5vw, 44px); }
   .about__body { grid-column: 1 / -1; }
-  .about__portrait { grid-column: 1 / span 3; }
   .about__backdrop { width: 78vw; right: -26%; opacity: .12; }
 
   .tl__row { grid-template-columns: 1fr; gap: 6px; }
@@ -1399,3 +1410,483 @@ html.no-anim .prow__thumb { display: none !important; }
 @media (max-width: 1180px) { .masonry { columns: 3; } }
 @media (max-width: 760px) { .masonry { columns: 2; } }
 @media (max-width: 460px) { .masonry { columns: 1; } }
+
+
+/* ══════════════════════════════════════════════════════════════════
+   16. 沉浸式海洋场景系统
+   海滩 → 水面 → 水滴 → 水下：一个固定画布贯穿全站，滚动即入水。
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── 16.1 固定海洋画布 ───────────────────────────────────────── */
+.ocean {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: #0a3540;
+  transition: background 1.1s linear;
+}
+.ocean__canvas,
+.ocean__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.ocean__canvas { display: block; }
+.ocean__video { opacity: 0; }
+.ocean__veil { position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity 1s linear; }
+
+/* 无 WebGL / 窄屏：视频 + 渐变兜底 */
+.ocean--fallback .ocean__video { opacity: .92; transition: opacity 1s linear, filter 1s linear; }
+.ocean--fallback .ocean__veil { opacity: 1; }
+
+body[data-scene="0"] .ocean { background: linear-gradient(180deg, #1b8ba0 0%, #40bfd2 46%, #c6ebe6 100%); }
+body[data-scene="1"] .ocean { background: linear-gradient(180deg, #17798f 0%, #2ba6bd 52%, #0d6076 100%); }
+body[data-scene="2"] .ocean { background: linear-gradient(180deg, #0d566f 0%, #0a3b52 55%, #062a3c 100%); }
+body[data-scene="3"] .ocean { background: linear-gradient(180deg, #093a4d 0%, #041e2c 46%, #010910 100%); }
+
+body[data-scene="0"] .ocean--fallback .ocean__video { opacity: .96; }
+body[data-scene="1"] .ocean--fallback .ocean__video { opacity: .58; filter: saturate(1.05) brightness(1.02); }
+body[data-scene="2"] .ocean--fallback .ocean__video { opacity: .38; filter: saturate(.85) brightness(.66); }
+body[data-scene="3"] .ocean--fallback .ocean__video { opacity: .18; filter: saturate(.6) brightness(.34); }
+
+body[data-scene="0"] .ocean--fallback .ocean__veil {
+  background: linear-gradient(180deg, rgba(6,44,56,.22) 0%, rgba(6,44,56,0) 30%, rgba(198,235,230,.42) 100%);
+}
+body[data-scene="1"] .ocean--fallback .ocean__veil {
+  background: linear-gradient(180deg, rgba(5,50,64,.34) 0%, rgba(8,72,86,.06) 52%, rgba(4,40,54,.46) 100%);
+}
+body[data-scene="2"] .ocean--fallback .ocean__veil {
+  background: linear-gradient(180deg, rgba(3,28,42,.58) 0%, rgba(2,18,30,.74) 100%);
+}
+body[data-scene="3"] .ocean--fallback .ocean__veil {
+  background: linear-gradient(180deg, rgba(2,18,28,.74) 0%, rgba(0,6,11,.95) 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ocean--fallback .ocean__video { display: none; }
+}
+
+/* ── 16.2 玻璃立方体的拖拽手柄 ───────────────────────────────── */
+.cube-handle {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: clamp(210px, 23vw, 350px);
+  height: clamp(210px, 23vw, 350px);
+  border-radius: 50%;
+  z-index: 40;
+  pointer-events: none;
+  opacity: 0;
+  cursor: grab;
+  touch-action: none;
+  will-change: transform;
+  transition: opacity .55s var(--ease);
+  display: grid;
+  place-items: center;
+}
+.cube-handle.is-live { pointer-events: auto; opacity: 1; }
+.cube-handle__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px dashed rgba(255, 255, 255, .5);
+  opacity: .34;
+  transition: opacity .45s var(--ease), transform .6s var(--ease);
+}
+.cube-handle.is-live:hover .cube-handle__ring { opacity: .78; transform: scale(.97); }
+.cube-handle::after {
+  content: "DRAG";
+  font-family: var(--f-meta);
+  font-size: 9.5px;
+  letter-spacing: .28em;
+  color: rgba(255, 255, 255, .0);
+  transform: translateY(calc(clamp(210px, 23vw, 350px) / 2 + 16px));
+  transition: color .4s var(--ease);
+}
+.cube-handle.is-live:hover::after { color: rgba(255, 255, 255, .72); }
+.ocean.is-dragging ~ .cube-handle { cursor: grabbing; }
+
+/* ── 16.3 场景容器 & 各自的色彩主题 ─────────────────────────── */
+.scene { position: relative; z-index: 2; color: var(--ink); }
+
+/* 海滩：明亮海水上的深色结构 + 暖白巨字 */
+.scene--beach {
+  --ink: #f4fbfb;
+  --ink-70: rgba(244, 251, 251, .82);
+  --ink-45: rgba(244, 251, 251, .62);
+  --ink-26: rgba(244, 251, 251, .34);
+  --ink-12: rgba(244, 251, 251, .16);
+  --line: rgba(247, 244, 234, .34);
+  --accent: #f7f4ea;
+  --accent-2: #bde8e1;
+  --on-ocean: #f7f4ea;
+}
+
+/* 水面：明亮青绿 → 深色文字，玻璃卡片是浅色磨砂 */
+.scene--surface {
+  --ink: #0c2f38;
+  --ink-70: rgba(12, 47, 56, .78);
+  --ink-45: rgba(12, 47, 56, .56);
+  --ink-26: rgba(12, 47, 56, .30);
+  --ink-12: rgba(12, 47, 56, .14);
+  --line: rgba(12, 47, 56, .16);
+  --accent: #0b4f5a;
+  --accent-2: #1d94a6;
+  --on-ocean: #0c2f38;
+  --glass-bg: rgba(255, 255, 255, .46);
+  --glass-bd: rgba(255, 255, 255, .74);
+  --glass-sh: 0 28px 80px -40px rgba(5, 44, 58, .60);
+  --glass-tint: inset 0 1px 0 rgba(255, 255, 255, .62);
+}
+
+/* 水滴：深水，浅色文字，玻璃偏冷 */
+.scene--droplet {
+  --ink: #eaf8fb;
+  --ink-70: rgba(234, 248, 251, .78);
+  --ink-45: rgba(234, 248, 251, .54);
+  --ink-26: rgba(234, 248, 251, .26);
+  --ink-12: rgba(234, 248, 251, .12);
+  --line: rgba(220, 246, 251, .18);
+  --accent: #bde8e1;
+  --accent-2: #6fdbe4;
+  --on-ocean: #eaf8fb;
+  --glass-bg: rgba(196, 242, 250, .085);
+  --glass-bd: rgba(214, 246, 252, .26);
+  --glass-sh: 0 30px 90px -46px rgba(0, 12, 20, .80);
+  --glass-tint: inset 0 1px 0 rgba(226, 250, 255, .26);
+}
+
+/* 水下：更深，几乎融入黑暗 */
+.scene--deep {
+  --ink: #e6f6fa;
+  --ink-70: rgba(230, 246, 250, .76);
+  --ink-45: rgba(230, 246, 250, .50);
+  --ink-26: rgba(230, 246, 250, .24);
+  --ink-12: rgba(230, 246, 250, .12);
+  --line: rgba(208, 244, 250, .16);
+  --accent: #9fe8e0;
+  --accent-2: #6fdbe4;
+  --on-ocean: #e6f6fa;
+  --glass-bg: rgba(180, 238, 248, .065);
+  --glass-bd: rgba(206, 244, 252, .22);
+  --glass-sh: 0 30px 90px -46px rgba(0, 10, 18, .86);
+  --glass-tint: inset 0 1px 0 rgba(226, 250, 255, .22);
+}
+
+/* 板块之间留出过渡空间，让场景切换发生在空白处 */
+.scene--surface,
+.scene--droplet { padding-bottom: clamp(120px, 22vh, 300px); }
+
+/* ── 16.4 玻璃卡片 ───────────────────────────────────────────── */
+.glass {
+  background: var(--glass-bg, rgba(255, 255, 255, .14));
+  border: 1px solid var(--glass-bd, rgba(255, 255, 255, .30));
+  border-radius: 6px;
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  backdrop-filter: blur(20px) saturate(140%);
+  box-shadow: var(--glass-tint, inset 0 1px 0 rgba(255, 255, 255, .28)), var(--glass-sh, 0 24px 70px -40px rgba(0, 20, 30, .7));
+}
+
+/* ── 16.5 各板块改为透明，让场景透出来 ───────────────────────── */
+.hero,
+.about,
+.projects,
+.folio,
+.footer,
+.skills,
+.contact { background: transparent; }
+
+.hero { background: transparent; }
+.about { background: transparent; overflow: visible; }
+.projects { background: transparent; }
+.skills { background: transparent; }
+.contact { background: transparent; }
+.about__backdrop { display: none; }
+
+/* 内容层压在画布之上 */
+.hero__grid,
+.about > *,
+.projects > *,
+.skills > * { position: relative; z-index: 2; }
+
+.sub { display: block; }
+.sub--contact { margin-top: clamp(60px, 12vh, 160px); }
+
+/* ── 16.6 HERO：暖白巨字 + 入水渐变 ─────────────────────────── */
+.scene--beach { min-height: 100svh; overflow: hidden; }
+
+.hero__title span {
+  background-image: linear-gradient(180deg,
+    var(--warm-white) 0%,
+    var(--warm-white) 56%,
+    rgba(186, 228, 236, .96) 80%,
+    rgba(126, 200, 218, .72) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: none;
+  filter: drop-shadow(0 2px 12px rgba(3, 38, 50, .55)) drop-shadow(0 9px 46px rgba(3, 38, 50, .44));
+}
+@supports not ((-webkit-background-clip: text) or (background-clip: text)) {
+  .hero__title span { color: var(--warm-white); }
+}
+
+/* 只压暗顶栏一带，把米白沙滩留给画面下部 */
+.scene--beach::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(5, 40, 52, .30) 0%, rgba(5, 40, 52, 0) 20%),
+    radial-gradient(118% 54% at 24% 45%, rgba(4, 34, 46, .28) 0%, rgba(4, 34, 46, 0) 68%);
+}
+.scene--beach .hero__type,
+.scene--beach .hero__intro { position: relative; z-index: 3; }
+.scene--beach .hero__title span { text-shadow: none; }
+.scene--beach .hero__kicker,
+.scene--beach .hero__sub {
+  text-shadow: 0 1px 22px rgba(3, 36, 48, .55), 0 1px 3px rgba(3, 36, 48, .30);
+}
+/* 沙滩上的文字用深墨色，纸上印刷感 */
+.scene--beach .hero__hello,
+.scene--beach .hero__lead {
+  color: #0b3a44;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .50);
+}
+.scene--beach .hero__badge,
+.scene--beach .hero__scroll {
+  color: #0b3a44;
+  text-shadow: none;
+}
+.scene--beach .hero__badge {
+  border-color: rgba(11, 58, 68, .34);
+  background: rgba(255, 255, 255, .34);
+}
+.scene--beach .hero__scroll i { background: rgba(11, 58, 68, .5); }
+.scene--beach .hero__tl .meta,
+.scene--beach .hero__tr .meta { text-shadow: 0 1px 18px rgba(3, 36, 48, .5); }
+
+/* ── 16.7 跑马灯：海滩与水面的过渡带 ─────────────────────────── */
+.marquee {
+  position: relative;
+  z-index: 2;
+  background: rgba(3, 32, 44, .22);
+  border-top: 1px solid rgba(255, 255, 255, .26);
+  border-bottom: 1px solid rgba(255, 255, 255, .18);
+  color: rgba(255, 255, 255, .88);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+.marquee__row span i { background: currentColor; opacity: .5; }
+
+/* ── 16.8 水面场景：关于 ─────────────────────────────────────── */
+.scene--surface .sec-head { margin-bottom: clamp(28px, 4.4vw, 68px); }
+.scene--surface .about__body { padding: clamp(20px, 2.4vw, 38px); }
+.scene--surface .about__facts { border-top-color: rgba(12, 47, 56, .18); }
+
+.scene--surface .tl {
+  margin-top: clamp(48px, 8vw, 120px);
+  padding: clamp(20px, 2.4vw, 38px) clamp(18px, 2.2vw, 34px) clamp(6px, 1vw, 14px);
+}
+.scene--surface .tl__row { border-top-color: rgba(12, 47, 56, .14); }
+.scene--surface .tl__hit { color: rgba(11, 79, 90, .42); }
+
+/* 证件照：贴在水面上的一点水波折射感 */
+.about__portrait img {
+  border-radius: 4px;
+  box-shadow: 0 26px 70px -40px rgba(4, 40, 52, .78), 0 0 0 1px rgba(255, 255, 255, .5);
+}
+
+/* ── 16.9 水滴场景：项目 / 作品 ─────────────────────────────── */
+.scene--droplet .proj__title { color: var(--ink); }
+.scene--droplet .prow { border-top-color: var(--line); }
+.scene--droplet .prow__thumb img { border-radius: 4px; }
+.scene--droplet .folio__item {
+  border: 1px solid var(--glass-bd);
+  border-right: 1px solid var(--glass-bd);
+  margin: 0;
+}
+.scene--droplet .folio__grid { gap: clamp(12px, 1.6vw, 22px); }
+
+/* ── 16.10 水下场景：能力 / 联系 ────────────────────────────── */
+.scene--deep .skill { padding: clamp(20px, 2.4vw, 34px); }
+.scene--deep .skills__grid { gap: clamp(12px, 1.6vw, 22px); }
+.scene--deep .crow { padding: clamp(12px, 1.4vw, 20px) clamp(14px, 1.8vw, 26px); }
+.scene--deep .contact__rows { gap: clamp(8px, 1vw, 14px); }
+.scene--deep .contact__title { color: var(--ink); }
+.scene--deep .contact__title--accent { color: var(--accent-2); }
+.scene--deep .foot { border-top-color: var(--line); }
+.scene--deep .skills__field span { opacity: .16; color: var(--ink); }
+
+/* ── 16.11 导航：全程透明，颜色随场景明暗切换 ───────────────── */
+body:not(.case-page):not(.subpage) .masthead,
+body:not(.case-page):not(.subpage) .masthead.is-stuck {
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+body:not(.case-page):not(.subpage) .masthead::after { opacity: 0 !important; transform: scaleX(0) !important; }
+body:not(.case-page):not(.subpage) .masthead:not(.is-stuck) .masthead__mark { color: inherit; }
+body.is-light .masthead { color: #08333d; text-shadow: 0 1px 22px rgba(255, 255, 255, .62); }
+body.is-dark .masthead { color: #f0fafd; text-shadow: 0 1px 22px rgba(1, 18, 28, .70); }
+
+/* 顶部固定柔光，保证导航可读 */
+body:not(.case-page):not(.subpage)::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 132px;
+  z-index: 30;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .34) 0%, rgba(255, 255, 255, 0) 100%);
+  transition: background .8s var(--ease);
+}
+body.is-dark::before { background: linear-gradient(180deg, rgba(1, 18, 28, .46) 0%, rgba(1, 18, 28, 0) 100%); }
+
+body.is-dark .grain { mix-blend-mode: soft-light; opacity: .20; }
+body.is-light .grain { mix-blend-mode: multiply; opacity: .22; }
+
+/* ── 16.12 项目详情页：更紧凑的 4 段结构 ────────────────────── */
+.case__sec {
+  grid-template-columns: minmax(0, 13ch) minmax(0, 1fr);
+  align-items: start;
+  column-gap: clamp(18px, 3vw, 56px);
+  row-gap: clamp(8px, 1.2vw, 16px);
+}
+.case__secno { grid-column: 1; grid-row: 1; }
+.case__sech { grid-column: 1; grid-row: 2; }
+.case__secbody { grid-column: 2; grid-row: 1 / span 2; max-width: 62ch; }
+
+.case__cta {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 1.6vw, 20px);
+  padding: clamp(28px, 4vw, 58px) var(--pad) clamp(34px, 4.6vw, 70px);
+  border-top: 1px solid var(--line);
+}
+.case__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  align-self: flex-start;
+  font-family: var(--f-meta);
+  font-size: var(--fs-meta);
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 4px;
+  transition: gap .35s var(--ease), opacity .3s var(--ease);
+}
+.case__link:hover { gap: 15px; opacity: .78; }
+.case__link i { font-style: normal; }
+.case__note { font-size: clamp(12px, .92vw, 14px); color: var(--ink-45); }
+
+@media (max-width: 760px) {
+  .case__sec { grid-template-columns: minmax(0, 1fr); }
+  .case__secno { grid-column: 1; grid-row: 1; }
+  .case__sech { grid-column: 1; grid-row: 2; }
+  .case__secbody { grid-column: 1; grid-row: 3; max-width: none; }
+}
+
+/* ── 16.13 响应式：窄屏回到静态场景 ─────────────────────────── */
+@media (max-width: 980px) {
+  .scene--surface,
+  .scene--droplet { padding-bottom: clamp(60px, 10vh, 140px); }
+  .scene--surface .about__body { padding: clamp(16px, 4vw, 24px); }
+  .hero__title span { filter: none; }
+}
+
+@media (max-width: 640px) {
+  .cube-handle { display: none; }
+  .ocean--fallback .ocean__video { opacity: .82; }
+  .sub--contact { margin-top: clamp(40px, 8vh, 90px); }
+}
+
+/* ── 16.14 布局收口：把旧的「分栏线」改成玻璃卡片 ───────────── */
+.sub { margin-top: clamp(72px, 13vh, 180px); }
+.sub--contact { margin-top: clamp(72px, 13vh, 180px); }
+
+/* 标题里的强调字跟随场景 */
+.scene .about__title span:nth-child(2),
+.scene .skills__title span:nth-child(2) { color: var(--accent-2); }
+.scene--deep .skills__field span { color: var(--ink); opacity: .10; }
+.scene--deep .skills__field span:nth-child(even) {
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(230, 246, 250, .26);
+  opacity: .45;
+}
+.scene--surface .about__body {
+  --glass-bg: rgba(255, 255, 255, .56);
+  --glass-bd: rgba(255, 255, 255, .84);
+}
+/* 水滴场景：整片压暗一档，保证白字压得住（顶部不设硬边） */
+.scene--droplet::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(2, 26, 40, 0) 0%, rgba(2, 26, 40, .34) 16%, rgba(2, 26, 40, .10) 44%, rgba(2, 22, 34, .36) 100%),
+    linear-gradient(90deg, rgba(2, 24, 36, .34) 0%, rgba(2, 24, 36, 0) 48%);
+}
+
+/* 水下场景里，深色文字一律换成浅色 */
+.scene--deep .skill__mark { color: var(--ink); }
+.scene--deep .skill__mark em { color: var(--accent-2); }
+.scene--deep .crow__v { color: var(--ink); }
+.scene--deep .crow__k { color: var(--accent-2); }
+.scene--droplet .folio__no,
+.scene--droplet .folio__go { color: var(--accent-2); }
+
+.scene--droplet .folio__grid,
+.scene--deep .skills__grid {
+  margin: 0 var(--pad);
+  gap: clamp(12px, 1.6vw, 22px);
+  background: transparent;
+  border: 0;
+}
+.scene--droplet .folio__item {
+  padding: clamp(22px, 2.4vw, 34px);
+  min-height: clamp(180px, 22vw, 280px);
+  border: 1px solid var(--glass-bd);
+}
+.scene--droplet .folio__item:hover { background: rgba(196, 242, 250, .16); }
+.scene--deep .skill:hover { background: rgba(180, 238, 248, .13); }
+
+.scene--deep .crow {
+  border: 1px solid var(--glass-bd);
+  border-bottom: 1px solid var(--glass-bd);
+  padding: clamp(13px, 1.5vw, 22px) clamp(14px, 1.8vw, 26px);
+}
+.scene--deep .crow:hover {
+  background: rgba(180, 238, 248, .14);
+  padding-left: calc(clamp(14px, 1.8vw, 26px) + 10px);
+}
+
+/* 时间线：去掉旧的分栏底色，靠玻璃面板分层 */
+.scene--surface .tl__list { border-top: 0; }
+.scene--surface .tl__head { border-bottom: 1px solid rgba(12, 47, 56, .16); padding-bottom: 10px; }
+
+/* 联系大标题：水下发光感 */
+.scene--deep .contact__title { text-shadow: 0 0 60px rgba(127, 212, 200, .30); }
+
+/* 页脚 */
+.foot {
+  position: relative;
+  z-index: 2;
+  color: var(--ink-45);
+  border-top: 1px solid var(--line);
+}
+
+/* 项目详情页：给一条连续的浅海底色 */
+body.case-page { background: linear-gradient(180deg, #d9eeeb 0%, #e7f6f1 34%, #f5f2e9 100%); }
+.case { background: transparent; }
+body.case-page .grain { mix-blend-mode: multiply; opacity: .18; }
+body.case-page .masthead.is-stuck { background: rgba(231, 246, 241, .9); }

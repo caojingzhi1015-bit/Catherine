@@ -8,23 +8,7 @@
   var root = document.documentElement;
   var cfg = window.SITE_CONFIG || {};
 
-  /* ── 1. 视频源：按视口 + 编码支持挑文件
-         （不用 <source media>，避免 Chrome 源选择直接失败） ── */
-  (function setupVideos() {
-    var small = window.matchMedia("(max-width: 900px)").matches;
-    var probe = document.createElement("video");
-    var canWebm = probe.canPlayType('video/webm; codecs="vp9"') !== "";
-    ["oceanVideo", "contactVideo"].forEach(function (id) {
-      var v = document.getElementById(id);
-      if (!v) return;
-      var src = small ? v.getAttribute("data-src-sm") : v.getAttribute("data-src");
-      if (!src) return;
-      if (canWebm) src = src.replace(/\.mp4$/, ".webm");   // 优先 VP9，MP4 兜底
-      v.setAttribute("src", src);
-      v.setAttribute("preload", "auto");
-      try { v.load(); } catch (e) {}
-    });
-  })();
+  /* ── 1. 海洋视频的源选择由 assets/scenes.js 统一负责 ───────── */
 
   /* ── 2. 配置注入：联系方式集中定义，页面只读配置 ───────────── */
   function setText(id, txt) {
@@ -97,13 +81,13 @@
   /* ── 4. 标记渐显元素（在首帧之前完成，避免闪白） ───────────── */
   var REVEAL = [
     ".sec-head",
-    ".about__title", ".about__body", ".about__portrait",
+    ".about__top", ".about__title", ".about__portrait", ".about__body",
     ".tl__head", ".tl__row",
     ".proj__title", ".proj__intro", ".prow",
     ".folio__intro", ".folio__item",
     ".skills__title", ".skill", ".skills__lang",
     ".contact__title", ".crow",
-    ".case__sec", ".case__nums", ".case__next"
+    ".case__sec", ".case__cta", ".case__next"
   ];
   var stagger = [".tl__list", ".ptable", ".folio__grid", ".skills__grid"];
   Array.prototype.forEach.call(document.querySelectorAll(REVEAL.join(",")), function (el) {

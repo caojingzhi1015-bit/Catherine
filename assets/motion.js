@@ -84,16 +84,10 @@
   });
 
   /* ── 4. 首屏视差 ─────────────────────────────────────────── */
-  if (document.querySelector(".hero__stage")) {
-    gsap.to(".hero__stage", {
-      yPercent: 12,
-      scale: 1.05,
-      ease: "none",
-      scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true }
-    });
+  if (document.querySelector(".hero__grid")) {
     gsap.to(".hero__grid", {
-      yPercent: -6,
-      opacity: 0.3,
+      yPercent: -7,
+      opacity: 0.22,
       ease: "none",
       scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true }
     });
@@ -103,6 +97,11 @@
       ease: "none",
       scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: 0.6 }
     });
+    gsap.to(".hero__tl", {
+      yPercent: -16,
+      ease: "none",
+      scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true }
+    });
   }
 
   /* ── 5. 跑马灯（无限横向动态排版） ────────────────────────── */
@@ -111,15 +110,7 @@
     gsap.to(row, { xPercent: -50, duration: 30, ease: "none", repeat: -1 });
   }
 
-  /* ── 6. ABOUT：背景视差 ──────────────────────────────────── */
-  if (document.querySelector(".about__backdrop")) {
-    gsap.to(".about__backdrop", {
-      yPercent: -14,
-      ease: "none",
-      scrollTrigger: { trigger: ".about", start: "top bottom", end: "bottom top", scrub: true }
-    });
-  }
-  /* 时间线：数字轻微横向滑入 */
+  /* ── 6. 时间线：数字轻微横向滑入 ─────────────────────────── */
   Array.prototype.forEach.call(document.querySelectorAll(".tl__row"), function (r) {
     var hit = r.querySelector(".tl__hit");
     if (!hit) return;
@@ -227,8 +218,19 @@
     }, { threshold: 0.1 });
     io.observe(v);
   }
-  autoVideo(document.getElementById("contactVideo"));
   autoVideo(document.getElementById("oceanVideo"));
+
+  /* ── 10. 场景内的轻微纵深：卡片与场景背景反向错位 ─────────── */
+  [".about__top", ".tl", ".folio__grid", ".skills__grid", ".contact__rows"].forEach(function (sel) {
+    var el = document.querySelector(sel);
+    if (!el) return;
+    gsap.fromTo(el,
+      { yPercent: 2.2 },
+      {
+        yPercent: -2.2, ease: "none",
+        scrollTrigger: { trigger: el, start: "top bottom", end: "bottom top", scrub: true }
+      });
+  });
 
   /* ── 11. 自定义光标 ───────────────────────────────────────── */
   var cursor = document.getElementById("cursor");

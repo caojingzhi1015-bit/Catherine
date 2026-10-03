@@ -45,21 +45,17 @@
 
 <main class="case">
 
-  <!-- ── 顶部：编号 / 标题 / 少量 metadata ── -->
   <section class="case__hero">
     <a class="case__back" href="../../index.html#projects">← <span data-en="Back to projects">返回项目列表</span></a>
     <span class="case__no">PROJECT 01</span>
     <h1 class="case__title">FOLLOW<br />BUILDERS</h1>
-    <p class="case__sub" data-en="An AI industry digest that collects, filters, summarises and pushes itself — every morning, without anyone touching it.">
-      一个 AI 行业资讯自动推送系统：自动浏览、信息筛选、摘要提炼、网页展示与邮件定时推送。
+    <p class="case__sub" data-en="AI industry digest — automated collection, summary &amp; push.">
+      AI 行业资讯自动推送系统
     </p>
     <div class="case__daterow">
       <span><b>2026.05</b> — <span data-en="PRESENT">至今</span></span>
       <span>AI&nbsp;NEWS&nbsp;/&nbsp;AUTOMATION</span>
       <span data-en="Product design + AI tool development + deployment">产品设计 + AI 工具开发 + 部署落地</span>
-    </div>
-    <div class="tags case__tags">
-      <span>Claude Code</span><span>Cursor</span><span>Render</span><span>Flask</span><span>LLM</span>
     </div>
   </section>
 
@@ -67,126 +63,52 @@
     <img src="../../assets/media/ocean-frame-a.jpg" alt="Follow Builders 主视觉" />
   </figure>
 
-  <!-- ── Editorial case study ── -->
   <div class="case__body">
 
     <section class="case__sec">
-      <span class="case__secno">01 — OVERVIEW</span>
-      <h2 class="case__sech">THE<br />OVERVIEW</h2>
+      <span class="case__secno">01 — <span data-en="PROBLEM">问题</span></span>
+      <h2 class="case__sech">PROBLEM</h2>
       <div class="case__secbody">
-        <p data-en="Follow Builders is a daily digest for people who work in AI. It automatically browses the X / Twitter builder circle, filters out the noise, uses an LLM to summarise what actually matters, renders a readable page and pushes it on a fixed schedule.">
-          Follow Builders 是一个面向 AI 从业者的每日资讯日报。它自动浏览 X / Twitter 的 Builder 圈层，筛掉噪声，用 LLM 提炼真正重要的内容，渲染成可读的页面，并按固定时间自动推送。
-        </p>
-        <p data-en="The whole chain is: Information → Processing → Generation → Distribution.">
-          整条链路是：Information → Processing → Generation → Distribution。
-        </p>
+        <p data-en="AI professionals everywhere are drowning in fragmented news with a poor signal-to-noise ratio — and no stable entry point.">全球 AI 从业者资讯碎片化、有效信噪比低，缺少稳定的信息入口。</p>
       </div>
     </section>
 
     <section class="case__sec">
-      <span class="case__secno">02 — PROBLEM</span>
-      <h2 class="case__sech">THE<br />PROBLEM</h2>
+      <span class="case__secno">02 — <span data-en="THINKING">为什么</span></span>
+      <h2 class="case__sech">THINKING</h2>
       <div class="case__secbody">
-        <p data-en="AI professionals everywhere are drowning in fragmented news with a poor signal-to-noise ratio — and there is no stable entry point to check.">
-          全球 AI 从业者资讯碎片化、有效信噪比低，缺少稳定的信息入口。
-        </p>
-        <p data-en="You either refresh social feeds all day, or you miss things. Neither is a system.">
-          要么整天刷信息流，要么错过重要动态 —— 两者都不算一个「系统」。
-        </p>
+        <p data-en="Independently defined the product shape: aggregate X/Twitter builder updates on a daily schedule and output a fixed structure of「source key points + AI reading + one-line conclusion」.">独立定义产品形态：每日定时聚合 X/Twitter Builder 圈层动态，输出「原文要点 + AI 解读 + 一句话结论」的固定结构。</p>
       </div>
     </section>
 
     <section class="case__sec">
-      <span class="case__secno">03 — THINKING</span>
-      <h2 class="case__sech">THE<br />THINKING</h2>
+      <span class="case__secno">03 — <span data-en="ACTION">怎么做</span></span>
+      <h2 class="case__sech">ACTION</h2>
       <div class="case__secbody">
-        <p data-en="I defined the product shape independently: aggregate X / Twitter builder updates on a daily schedule, and output a fixed structure of「source key points + AI reading + one-line conclusion」.">
-          我独立定义了产品形态：每日定时聚合 X / Twitter Builder 圈层动态，输出「原文要点 + AI 解读 + 一句话结论」的固定结构。
-        </p>
-        <p data-en="Fixing the output structure is what makes a digest usable — readers know exactly where to look, and the summariser has a clear target to fill.">
-          把输出结构固定下来，是日报能被长期使用的关键：读者知道该看哪里，摘要模型也有明确的填空目标。
-        </p>
+        <p data-en="Built on an open-source collection framework and extended it into a full pipeline: collect → dedupe → keyword filter → LLM summary → layout → push. Deployed on Render with Cron scheduling and a Feishu custom-bot webhook.">基于开源采集框架二次开发，搭建采集 → 去重 → 关键词过滤 → LLM 摘要 → 排版渲染 → 推送全链路工作流；Render 部署 + Cron 定时调度 + 飞书自定义机器人 Webhook。</p>
       </div>
     </section>
 
     <section class="case__sec">
-      <span class="case__secno">04 — PROCESS</span>
-      <h2 class="case__sech">THE<br />PROCESS</h2>
+      <span class="case__secno">04 — <span data-en="RESULT">结果</span></span>
+      <h2 class="case__sech">RESULT</h2>
       <div class="case__secbody">
-        <div class="case__steps">
-          <div><dt data-en="Collect">采集</dt><dd data-en="Browses the builder circle on a schedule.">按计划浏览 Builder 圈层动态。</dd></div>
-          <div><dt data-en="Dedupe">去重</dt><dd data-en="Removes repeats across sources.">跨来源识别并剔除重复内容。</dd></div>
-          <div><dt data-en="Filter">筛选</dt><dd data-en="Keyword filtering to cut the noise.">关键词过滤，压低噪声。</dd></div>
-          <div><dt data-en="Summarise">摘要</dt><dd data-en="LLM condenses each item into key points + one-line conclusion.">LLM 把每条内容压缩为要点 + 一句话结论。</dd></div>
-          <div><dt data-en="Render">排版</dt><dd data-en="Renders a readable digest page.">渲染为可读的日报页面。</dd></div>
-          <div><dt data-en="Push">推送</dt><dd data-en="Cron scheduling + a Feishu custom-bot webhook.">Cron 定时调度 + 飞书自定义机器人 Webhook 推送。</dd></div>
-        </div>
+        <p data-en="Iterated 3 versions from user feedback, improving readability, keyword noise filtering and update latency. Digest production went from manual to fully automated — about 90% more efficient.">收集使用者反馈迭代 3 个版本，优化排版可读性、关键词噪声过滤与更新时效；日报生产由人工变为全自动输出，效率提升约 90%。</p>
       </div>
     </section>
 
-    <section class="case__sec">
-      <span class="case__secno">05 — SOLUTION</span>
-      <h2 class="case__sech">THE<br />SOLUTION</h2>
-      <div class="case__secbody">
-        <p data-en="Built on an open-source collection framework and extended into a full pipeline — collect → dedupe → keyword filter → LLM summary → layout → push — deployed on Render with Cron scheduling and a Feishu custom-bot webhook.">
-          基于开源采集框架二次开发，搭建采集 → 去重 → 关键词过滤 → LLM 摘要 → 排版渲染 → 推送的全链路工作流；Render 部署 + Cron 定时调度 + 飞书自定义机器人 Webhook。
-        </p>
-        <ul>
-          <li data-en="A single stable entry point for AI news, refreshed daily.">为 AI 资讯提供一个稳定的每日入口。</li>
-          <li data-en="Fixed output structure: key points + AI reading + one-line conclusion.">固定输出结构：原文要点 + AI 解读 + 一句话结论。</li>
-          <li data-en="Runs unattended — no manual editing.">无人值守运行，无需人工编辑。</li>
-        </ul>
+    <div class="case__cta">
+      <div class="tags">
+        <span>Claude Code</span><span>Cursor</span><span>Render</span><span>Flask</span><span>LLM</span>
       </div>
-    </section>
-
-    <section class="case__sec">
-      <span class="case__secno">06 — RESULT</span>
-      <h2 class="case__sech">THE<br />RESULT</h2>
-      <div class="case__secbody">
-        <p data-en="Iterated 3 versions from user feedback, improving readability, keyword noise filtering and update latency. Digest production went from manual to fully automated — about 90% more efficient.">
-          收集使用者反馈迭代 3 个版本，优化排版可读性、关键词噪声过滤与更新时效；日报生产由人工变为全自动输出，效率提升约 90%。
-        </p>
-        <ul class="case__nums">
-          <li><b>3</b><span data-en="versions shipped">版本迭代</span></li>
-          <li><b>90<span class="u">%</span></b><span data-en="production efficiency gain">效率提升</span></li>
-          <li><b>6</b><span data-en="pipeline stages">全链路环节</span></li>
-          <li><b>0</b><span data-en="manual editing">人工介入</span></li>
-        </ul>
-      </div>
-    </section>
-
-    <section class="case__sec">
-      <span class="case__secno">07 — TOOLS</span>
-      <h2 class="case__sech">THE<br />TOOLS</h2>
-      <div class="case__secbody">
-        <div class="tags">
-          <span>Claude Code</span><span>Cursor</span><span>Render</span><span>Flask</span><span>LLM</span><span>Cron</span><span data-en="Feishu webhook">飞书 Webhook</span>
-        </div>
-        <p style="margin-top:16px">
-          <a class="prow__go" href="https://follow-builders.onrender.com/" target="_blank" rel="noopener" data-cursor="VIEW" style="color:var(--accent);transform:none">
-            <span data-en="View live →">打开线上站点 →</span>
-          </a>
-        </p>
-        <p data-en="Hosted on Render's free tier — allow ~30s for the first load.">Render 免费实例休眠，首次打开请等待约 30 秒。</p>
-      </div>
-    </section>
-
-    <section class="case__sec">
-      <span class="case__secno">08 — REFLECTION</span>
-      <h2 class="case__sech">WHAT I<br />LEARNED</h2>
-      <div class="case__secbody">
-        <p data-en="The hard part of an automated digest is not the code — it is deciding what counts as signal. Fixing the output structure first made every later decision easier: which sources to keep, which keywords to filter, how long a summary should be.">
-          自动日报最难的部分不是写代码，而是定义「什么算有效信息」。先把输出结构定下来之后，后面每个决定都变简单了：保留哪些信源、过滤哪些关键词、摘要该多长。
-        </p>
-        <p data-en="Shipping three versions in public also taught me that a small, honest iteration loop beats a big planned release.">
-          连续公开迭代三个版本也让我确认：小而诚实的迭代循环，比一次性大版本更有效。
-        </p>
-      </div>
-    </section>
+      <a class="case__link" href="https://follow-builders.onrender.com/" target="_blank" rel="noopener" data-cursor="VIEW">
+        <span data-en="View live">查看项目</span><i>↗</i>
+      </a>
+      <p class="case__note" data-en="Hosted on Render's free tier — allow ~30s for the first load.">Render 免费实例休眠，首次打开请等待约 30 秒。</p>
+    </div>
 
   </div>
 
-  <!-- ── NEXT PROJECT ── -->
   <a class="case__next" href="../data-tool/" data-cursor="NEXT">
     <span class="case__nextk" data-en="Next project →">下一个项目 →</span>
     <span class="case__nextt">02 — DATA TOOL</span>

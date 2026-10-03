@@ -4,8 +4,8 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title data-en="CATHERINE CAO — AI / Content / Product / Overseas">曹静致 Catherine Cao — AI · 内容 · 产品 · 海外</title>
-<meta name="description" content="曹静致 Catherine Cao｜中国传媒大学广告学。AI 内容运营 / 产品运营 / 海外运营方向。明亮的海洋杂志式个人数字档案：项目、经历、作品与能力。" />
-<meta name="theme-color" content="#e7f6f1" />
+<meta name="description" content="曹静致 Catherine Cao｜中国传媒大学广告学。AI 内容运营 / 产品运营 / 海外运营方向。一场从沙滩走进海水的滚动叙事：项目、经历、作品与能力。" />
+<meta name="theme-color" content="#0b4f5a" />
 <meta property="og:title" content="CATHERINE CAO — AI / Content / Product / Overseas" />
 <meta property="og:description" content="Advertising student in Beijing, working across AI, content, product and overseas platforms." />
 <meta property="og:image" content="assets/media/ocean-surfer.jpg" />
@@ -29,15 +29,31 @@
 </script>
 <script>document.documentElement.classList.remove("no-js");</script>
 </head>
-<body>
+<body class="is-light" data-scene="0">
 
 <!-- 胶片颗粒 -->
 <div class="grain" aria-hidden="true"></div>
+
 <!-- 自定义光标 -->
 <div class="cursor" id="cursor" aria-hidden="true">
   <i class="cursor__dot"></i>
   <span class="cursor__label" id="cursorLabel"></span>
 </div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     固定海洋画布：全站四个场景共用，贯穿整页
+     ══════════════════════════════════════════════════════════════ -->
+<div class="ocean" id="ocean" aria-hidden="true">
+  <canvas class="ocean__canvas" id="oceanCanvas"></canvas>
+  <video class="ocean__video" id="oceanVideo" poster="assets/media/ocean-poster.jpg"
+         data-src="assets/media/ocean.mp4" data-src-sm="assets/media/ocean-mobile.mp4"
+         muted loop playsinline preload="none"></video>
+  <div class="ocean__veil"></div>
+</div>
+
+<!-- 拖拽玻璃立方体的手柄（跟随立方体的屏幕位置） -->
+<div class="cube-handle" id="cubeHandle" aria-hidden="true"><span class="cube-handle__ring"></span></div>
+
 <!-- 卷首过场 -->
 <div class="preload" id="preload" aria-hidden="true">
   <div class="preload__inner">
@@ -67,15 +83,11 @@
 
 <main>
 
-<!-- ══════════════ 01 · HERO ══════════════ -->
-<section class="hero" id="hero">
-  <div class="hero__stage">
-    <canvas class="hero__canvas" id="oceanCanvas" aria-hidden="true"></canvas>
-    <video class="hero__video" id="oceanVideo" poster="assets/media/ocean-poster.jpg"
-           data-src="assets/media/ocean.mp4" data-src-sm="assets/media/ocean-mobile.mp4"
-           muted loop playsinline autoplay preload="none" aria-hidden="true"></video>
-    <div class="hero__veil" aria-hidden="true"></div>
-  </div>
+<!-- ══════════════════════════════════════════════════════════════
+     场景 1 · 海滩 BEACH
+     ══════════════════════════════════════════════════════════════ -->
+<section class="scene scene--beach hero" id="hero">
+  <div class="scene__layer scene__layer--soft" aria-hidden="true"></div>
 
   <div class="hero__grid">
     <div class="hero__tl">
@@ -105,8 +117,8 @@
       <p class="hero__lead" data-en="Focused on AI content operations, product operations and overseas distribution — turning ideas into shippable lightweight products, fast.">
         关注 AI 内容运营、产品运营与海外传播，能把想法快速转化为可上线的轻量产品。
       </p>
-      <p class="hero__lead hero__lead--sm" data-en="A mix of content strategy, product thinking, AI-assisted building and cross-cultural distribution — with real work in automated news digests, data tools and interactive sites.">
-        兼具内容策划、产品思维、AI 协作开发与跨文化传播能力，已完成资讯自动推送、数据统计工具与互动网站等真实实践。
+      <p class="hero__lead hero__lead--sm" data-en="A mix of content strategy, product thinking, AI-assisted building and cross-cultural distribution.">
+        兼具内容策划、产品思维、AI 协作开发与跨文化传播能力。
       </p>
     </div>
 
@@ -119,7 +131,7 @@
   </div>
 </section>
 
-<!-- ══════════════ 跑马灯 ══════════════ -->
+<!-- ══════════════ 跑马灯（海滩 → 水面的过渡带） ══════════════ -->
 <div class="marquee" aria-hidden="true">
   <div class="marquee__row" id="marqueeRow">
     <span>AI CONTENT OPERATIONS<i></i>PRODUCT OPERATIONS<i></i>OVERSEAS OPERATIONS<i></i>EDITORIAL<i></i>OCEAN<i></i></span>
@@ -127,8 +139,10 @@
   </div>
 </div>
 
-<!-- ══════════════ 01 · ABOUT ══════════════ -->
-<section class="about" id="about">
+<!-- ══════════════════════════════════════════════════════════════
+     场景 2 · 水面 SURFACE — 关于 / 经历
+     ══════════════════════════════════════════════════════════════ -->
+<section class="scene scene--surface about" id="about">
   <div class="sec-head">
     <span class="sec-no">01</span>
     <span class="sec-name" data-en="About">关于</span>
@@ -136,13 +150,20 @@
   </div>
 
   <div class="about__grid">
-    <h2 class="about__title">
-      <span>WHO</span>
-      <span>AM</span>
-      <span>I</span>
-    </h2>
+    <div class="about__top">
+      <h2 class="about__title">
+        <span>WHO</span>
+        <span>AM</span>
+        <span>I</span>
+      </h2>
 
-    <div class="about__body">
+      <figure class="about__portrait">
+        <img src="assets/media/portrait.jpg" alt="曹静致 Catherine Cao" loading="lazy" />
+        <figcaption class="meta">曹静致 / CATHERINE CAO</figcaption>
+      </figure>
+    </div>
+
+    <div class="about__body glass">
       <p class="about__identity">
         <span data-en="ADVERTISING STUDENT">广告学学生</span>
         <span data-en="AI CONTENT">AI 内容</span>
@@ -163,19 +184,10 @@
         <div><dt data-en="Based">现居</dt><dd data-en="Beijing · From Bengbu, Anhui">北京 ｜ 安徽蚌埠</dd></div>
       </dl>
     </div>
-
-    <figure class="about__portrait">
-      <img src="assets/media/portrait.jpg" alt="曹静致 Catherine Cao" loading="lazy" />
-      <figcaption class="meta">曹静致 / CATHERINE CAO</figcaption>
-    </figure>
-  </div>
-
-  <div class="about__backdrop" aria-hidden="true">
-    <img src="assets/media/ocean-underwater.jpg" alt="" loading="lazy" />
   </div>
 
   <!-- 经历时间线 -->
-  <div class="tl" id="experience">
+  <div class="tl glass" id="experience">
     <div class="tl__head">
       <span class="meta" data-en="Experience">经历</span>
       <span class="sec-line"></span>
@@ -233,8 +245,10 @@
   </div>
 </section>
 
-<!-- ══════════════ 02 · PROJECTS（杂志目录） ══════════════ -->
-<section class="projects" id="projects">
+<!-- ══════════════════════════════════════════════════════════════
+     场景 3 · 水滴 DROPLET — 项目 / 作品
+     ══════════════════════════════════════════════════════════════ -->
+<section class="scene scene--droplet projects" id="projects">
   <div class="sec-head">
     <span class="sec-no">02</span>
     <span class="sec-name" data-en="Projects">项目</span>
@@ -310,46 +324,48 @@
     </a>
 
   </div>
+
+  <!-- ── 作品 ── -->
+  <div class="sub" id="portfolio">
+    <div class="sec-head">
+      <span class="sec-no">03</span>
+      <span class="sec-name" data-en="Portfolio">作品</span>
+      <span class="sec-line"></span>
+    </div>
+
+    <p class="folio__intro" data-en="Content production and visual communication behind the operations work — campaign materials, video and social content.">
+      内容生产与视觉表达能力：传播物料、视频与社交内容，服务于内容运营与产品运营。
+    </p>
+
+    <div class="folio__grid">
+      <a class="folio__item glass" href="posters.html" data-cursor="EXPLORE">
+        <span class="folio__no">01</span>
+        <h3 data-en="Poster Design">海报设计</h3>
+        <p data-en="Key visuals, campaign posters and online assets for events, campuses and artists.">活动主视觉、宣传海报与线上传播物料，覆盖校园、追星与工作场景。</p>
+        <span class="folio__go" data-en="Content Production ↗">内容生产 ↗</span>
+      </a>
+
+      <a class="folio__item glass" href="https://xhslink.com/m/9KxtGStaJO6" target="_blank" rel="noopener" data-cursor="EXPLORE">
+        <span class="folio__no">02</span>
+        <h3 data-en="Video Editing">视频剪辑</h3>
+        <p data-en="Short-video production and pacing optimisation, tuned to platform tone and distribution efficiency.">短视频内容制作与节奏优化，兼顾平台调性与传播效率。</p>
+        <span class="folio__go" data-en="Video ↗">视频 ↗</span>
+      </a>
+
+      <a class="folio__item glass" href="social.html" data-cursor="EXPLORE">
+        <span class="folio__no">03</span>
+        <h3 data-en="Social Media">自媒体运营成果</h3>
+        <p data-en="Threads, Instagram and TikTok results — topic selection, audience growth and cross-cultural expression.">覆盖 Threads、Instagram、TikTok 等平台，关注内容选题、用户增长与跨文化表达。</p>
+        <span class="folio__go" data-en="Social ↗">自媒体 ↗</span>
+      </a>
+    </div>
+  </div>
 </section>
 
-<!-- ══════════════ 03 · PORTFOLIO ══════════════ -->
-<section class="folio" id="portfolio">
-  <div class="sec-head">
-    <span class="sec-no">03</span>
-    <span class="sec-name" data-en="Portfolio">作品</span>
-    <span class="sec-line"></span>
-  </div>
-
-  <p class="folio__intro" data-en="Content production and visual communication behind the operations work — campaign materials, video and social content.">
-    内容生产与视觉表达能力：传播物料、视频与社交内容，服务于内容运营与产品运营。
-  </p>
-
-  <div class="folio__grid">
-    <a class="folio__item" href="posters.html" data-cursor="EXPLORE">
-      <span class="folio__no">01</span>
-      <h3 data-en="Poster Design">海报设计</h3>
-      <p data-en="Key visuals, campaign posters and online assets for events, campuses and artists.">活动主视觉、宣传海报与线上传播物料，覆盖校园、追星与工作场景。</p>
-      <span class="folio__go" data-en="Content Production ↗">内容生产 ↗</span>
-    </a>
-
-    <a class="folio__item" href="https://xhslink.com/m/9KxtGStaJO6" target="_blank" rel="noopener" data-cursor="EXPLORE">
-      <span class="folio__no">02</span>
-      <h3 data-en="Video Editing">视频剪辑</h3>
-      <p data-en="Short-video production and pacing optimisation, tuned to platform tone and distribution efficiency.">短视频内容制作与节奏优化，兼顾平台调性与传播效率。</p>
-      <span class="folio__go" data-en="Video ↗">视频 ↗</span>
-    </a>
-
-    <a class="folio__item" href="social.html" data-cursor="EXPLORE">
-      <span class="folio__no">03</span>
-      <h3 data-en="Social Media">自媒体运营成果</h3>
-      <p data-en="Threads, Instagram and TikTok results — topic selection, audience growth and cross-cultural expression.">覆盖 Threads、Instagram、TikTok 等平台，关注内容选题、用户增长与跨文化表达。</p>
-      <span class="folio__go" data-en="Social ↗">自媒体 ↗</span>
-    </a>
-  </div>
-</section>
-
-<!-- ══════════════ 04 · SKILLS ══════════════ -->
-<section class="skills" id="skills">
+<!-- ══════════════════════════════════════════════════════════════
+     场景 4 · 水下 DEEP — 能力 / 联系
+     ══════════════════════════════════════════════════════════════ -->
+<section class="scene scene--deep skills" id="skills">
   <div class="sec-head">
     <span class="sec-no">04</span>
     <span class="sec-name" data-en="Skills">能力</span>
@@ -374,7 +390,7 @@
   </div>
 
   <div class="skills__grid">
-    <article class="skill">
+    <article class="skill glass">
       <h3 class="skill__mark">AI<em data-en="Build with it">用它做东西</em></h3>
       <p class="skill__desc" data-en="AI-assisted workflow, rapid prototyping, automation and content efficiency — every claim backed by a shipped project.">
         AI 辅助工作流、快速原型、自动化与内容提效 —— 每一条都有上线的项目支撑。
@@ -385,7 +401,7 @@
       <p class="skill__proof" data-en="Evidence · Follow Builders digest · content analytics MVP">证据 · Follow Builders 日报 · 数据统计 MVP</p>
     </article>
 
-    <article class="skill">
+    <article class="skill glass">
       <h3 class="skill__mark" data-en="MEDIA<em>Overseas focus</em>">传播传媒<em>重点在海外</em></h3>
       <p class="skill__desc" data-en="Content planning, copywriting, topic selection, distribution and paid promotion, data reviews — plus running overseas platforms and expressing across cultures.">
         内容策划、文案、选题、分发与投流、数据复盘，以及海外平台运营与跨文化表达。
@@ -397,7 +413,7 @@
       <p class="skill__proof" data-en="Evidence · Weibo 27-account matrix · K-pop accounts: 3,000+ followers, 150K Threads views">证据 · 微博 27 账号矩阵 · Kpop 账号涨粉 3000+、Threads 浏览 15 万</p>
     </article>
 
-    <article class="skill">
+    <article class="skill glass">
       <h3 class="skill__mark" data-en="DESIGN<em>Content visuals</em>">设计<em>内容视觉</em></h3>
       <p class="skill__desc" data-en="Poster and campaign visual design, short-video editing, information hierarchy and consistent aesthetics.">
         海报与传播物料视觉设计、短视频剪辑，强调清晰信息层级与审美统一。
@@ -412,18 +428,9 @@
   <p class="skills__lang" data-en="Languages &amp; certificates · CET-4 / CET-6 · Mandarin native">
     语言与证书 · 大学英语四六级 · 母语中文
   </p>
-</section>
 
-</main>
-
-<!-- ══════════════ 05 · CONTACT ══════════════ -->
-<section class="contact" id="contact">
-  <video class="contact__video" id="contactVideo" poster="assets/media/ocean-poster.jpg"
-         data-src="assets/media/ocean.mp4" data-src-sm="assets/media/ocean-mobile.mp4"
-         muted loop playsinline preload="none" aria-hidden="true"></video>
-  <div class="contact__veil" aria-hidden="true"></div>
-
-  <div class="contact__inner">
+  <!-- ── 联系 ── -->
+  <div class="sub sub--contact" id="contact">
     <div class="sec-head">
       <span class="sec-no">05</span>
       <span class="sec-name" data-en="Contact">联系</span>
@@ -435,26 +442,28 @@
     </h2>
 
     <div class="contact__rows">
-      <a class="crow" data-contact="email" href="mailto:485014934@qq.com" data-cursor="MAIL">
+      <a class="crow glass" data-contact="email" href="mailto:485014934@qq.com" data-cursor="MAIL">
         <span class="crow__k">EMAIL</span><span class="crow__v" id="cEmail">485014934@qq.com</span><i>↗</i>
       </a>
-      <a class="crow" data-contact="phone" href="tel:17555289870" data-cursor="MAIL">
+      <a class="crow glass" data-contact="phone" href="tel:17555289870" data-cursor="MAIL">
         <span class="crow__k" data-en="PHONE">电话</span><span class="crow__v" id="cPhone">17555289870</span><i>↗</i>
       </a>
-      <a class="crow" data-contact="github" data-cursor="VIEW">
+      <a class="crow glass" data-contact="github" data-cursor="VIEW">
         <span class="crow__k">GITHUB</span><span class="crow__v" id="cGithub">github.com/caojingzhi1015-bit</span><i>↗</i>
       </a>
-      <a class="crow crow--dl" href="assets/曹静致-AI内容运营-简历.pdf" download data-cursor="EXPLORE">
+      <a class="crow crow--dl glass" href="assets/曹静致-AI内容运营-简历.pdf" download data-cursor="EXPLORE">
         <span class="crow__k" data-en="RESUME">简历</span><span class="crow__v" data-en="Download PDF">下载 PDF</span><i>↓</i>
       </a>
     </div>
-  </div>
 
-  <footer class="foot">
-    <span>© 2026 曹静致 CATHERINE CAO</span>
-    <span class="foot__mid">OCEAN / PORTFOLIO / 2026</span>
-  </footer>
+    <footer class="foot">
+      <span>© 2026 曹静致 CATHERINE CAO</span>
+      <span class="foot__mid">OCEAN / PORTFOLIO / 2026</span>
+    </footer>
+  </div>
 </section>
+
+</main>
 
 <script src="assets/config.js"></script>
 <script src="assets/app.js"></script>
@@ -462,6 +471,6 @@
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js" defer></script>
 <script src="assets/motion.js" defer></script>
-<script type="module" src="assets/ocean.js"></script>
+<script type="module" src="assets/scenes.js"></script>
 </body>
 </html>
