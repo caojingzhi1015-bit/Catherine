@@ -26,3 +26,7 @@ package-lock.json
 # ---- 不上线的旧备份与开发工具 ----
 backup/
 tools/
+
+# ---- 本地预览截图（不入库） ----
+_shots/
+_old/

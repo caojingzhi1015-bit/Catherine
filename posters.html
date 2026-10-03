@@ -1,135 +1,143 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark">
+<html lang="zh-CN" class="no-js">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title data-en="Poster Design | Jingzhi Cao">海报设计 | 曹静致</title>
-  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/combine/npm/@fontsource/instrument-sans@5/400.css,npm/@fontsource/instrument-sans@5/400-italic.css,npm/@fontsource/instrument-sans@5/500.css,npm/@fontsource/instrument-sans@5/600.css,npm/@fontsource/instrument-sans@5/700.css,npm/@fontsource/noto-sans-sc@5/400.css,npm/@fontsource/noto-sans-sc@5/500.css,npm/@fontsource/noto-sans-sc@5/700.css,npm/@fontsource/inter@5/400.css,npm/@fontsource/inter@5/500.css,npm/@fontsource/inter@5/600.css" />
-  <link rel="stylesheet" href="assets/style.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title data-en="Poster Design — Archive 01 | CAO JINZHI">海报设计 — 档案 01 | 曹静致</title>
+<meta name="description" content="曹静致海报设计档案：工作物料、追星物料与校内设计，强调信息层级与审美统一。" />
+<meta name="theme-color" content="#050505" />
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2306161f'/%3E%3Cpath d='M0 20c4-3 8-3 12 0s8 3 12 0 8-3 12 0v12H0z' fill='%2314566a'/%3E%3Crect x='7' y='8' width='4' height='12' fill='%23f5f5f2'/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/anton@5/400.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/oswald@5/400.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/oswald@5/500.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/archivo-narrow@5/400.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/archivo-narrow@5/700.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/instrument-sans@5/400.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/instrument-sans@5/600.css" />
+<link rel="stylesheet" href="assets/style.css" />
+<script>document.documentElement.classList.remove("no-js");</script>
 </head>
-<body>
-<div class="wrap">
+<body class="subpage">
 
-  <header class="site-header">
-    <div class="container nav">
-      <a href="index.html" class="brand">JINGZHI CAO</a>
-      <div class="nav-actions">
-        <button class="pill" id="langToggle" aria-label="Switch language">EN</button>
-        <button class="pill" id="themeToggle" aria-label="Toggle theme"><span id="themeIcon">◑</span></button>
-      </div>
-    </div>
-  </header>
+<div class="grain" aria-hidden="true"></div>
 
-  <main>
-    <section class="page-hero">
-      <div class="container">
-        <a href="index.html" class="back-link" data-en="Back to home">← 返回主页</a>
-        <h1 data-en="Poster Design">海报设计</h1>
-        <p data-en="Campus design · fandom assets · professional work — event key visuals, promotional posters and online distribution assets.">
-          校内设计 · 追星物料 · 工作设计 — 涵盖活动主视觉、宣传海报与线上传播物料。
-        </p>
-      </div>
-    </section>
-
-    <section class="section" id="work" style="padding-top:24px">
-      <div class="container">
-        <div class="section-head reveal">
-          <span class="eyebrow" data-en="Professional Work">Work Design</span>
-          <h2 data-en="Professional Work">工作设计</h2>
-        </div>
-        <div class="masonry" id="grid-work"></div>
-      </div>
-    </section>
-
-    <section class="section" id="fandom" style="padding-top:0">
-      <div class="container">
-        <div class="section-head reveal">
-          <span class="eyebrow" data-en="Fandom Assets">Fandom Design</span>
-          <h2 data-en="Fandom Assets">追星物料设计</h2>
-        </div>
-        <div class="masonry" id="grid-fandom"></div>
-      </div>
-    </section>
-
-    <section class="section" id="school" style="padding-top:0">
-      <div class="container">
-        <div class="section-head reveal">
-          <span class="eyebrow" data-en="Campus Design">Campus Design</span>
-          <h2 data-en="Campus Design">校内设计</h2>
-        </div>
-        <div class="masonry" id="grid-school"></div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="site-footer">
-    <div class="container footer-inner">
-      <span>© 2026 曹静致</span>
-      <span data-en="Poster Design Portfolio">Poster Design Portfolio</span>
-    </div>
-  </footer>
-
-  <div class="lightbox" id="lightbox">
-    <button class="lightbox-close" id="lightboxClose">&times;</button>
-    <img src="" alt="" id="lightboxImg" />
+<header class="masthead is-stuck">
+  <a class="masthead__brand" href="index.html#portfolio">
+    <span class="masthead__mark">CAO&nbsp;JINZHI</span>
+    <span class="masthead__loc">ARCHIVE&nbsp;01</span>
+  </a>
+  <div class="masthead__tools">
+    <button class="tbtn" id="langToggle" type="button" aria-label="Switch language">EN</button>
   </div>
+</header>
 
+<main class="subpage__main">
+
+  <section class="page-hero">
+    <a class="back-link" href="index.html#portfolio">
+      <span data-en="← Back to index">← 返回主页</span>
+    </a>
+    <p class="page-hero__kicker" data-en="Portfolio · 01">作品集 · 01</p>
+    <h1 data-en="Poster Design">海报设计</h1>
+    <p class="page-hero__lead" data-en="Work assets · fandom assets · campus design — key visuals, campaign posters and online distribution materials.">
+      工作物料 · 追星物料 · 校内设计 — 涵盖活动主视觉、宣传海报与线上传播物料。
+    </p>
+  </section>
+
+  <section class="section" id="work">
+    <div class="sec-head">
+      <span class="sec-no">A</span>
+      <span class="sec-name" data-en="Professional Work">工作设计</span>
+      <span class="sec-line"></span>
+    </div>
+    <div class="masonry" id="grid-work"></div>
+  </section>
+
+  <section class="section" id="fandom">
+    <div class="sec-head">
+      <span class="sec-no">B</span>
+      <span class="sec-name" data-en="Fandom Assets">追星物料</span>
+      <span class="sec-line"></span>
+    </div>
+    <div class="masonry" id="grid-fandom"></div>
+  </section>
+
+  <section class="section" id="school">
+    <div class="sec-head">
+      <span class="sec-no">C</span>
+      <span class="sec-name" data-en="Campus Design">校内设计</span>
+      <span class="sec-line"></span>
+    </div>
+    <div class="masonry" id="grid-school"></div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <span>© 2026 曹静致 CAO JINZHI</span>
+  <span class="foot__mid">ARCHIVE 01 / POSTER</span>
+  <span data-en="Content production & visual communication">内容生产与视觉表达</span>
+</footer>
+
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose" type="button" aria-label="Close">&times;</button>
+  <img src="" alt="" id="lightboxImg" />
 </div>
 
 <script>
-  window.__SETS__ = [
-    ["grid-work", "assets/posters/work/", [
-      "微信图片_20260116031058_603_8.png",
-      "微信图片_20260127140019_700_8.png",
-      "微信图片_20260213112109_1018_8.png",
-      "微信图片_20260213112110_1019_8.png",
-      "微信图片_20260213112111_1020_8.png",
-      "微信图片_20260213112112_1021_8.png",
-      "微信图片_20260213112112_1022_8.png",
-      "微信图片_20260213112113_1023_8.png",
-      "微信图片_20260213112113_1024_8.png",
-      "微信图片_20260213112231_1025_8.png",
-      "微信图片_20260213112232_1026_8.png",
-      "微信图片_20260213112232_1027_8.png",
-      "微信图片_20260218220909_1040_8.png",
-      "微信图片_20260218220909_1041_8.png",
-      "微信图片_20260417013648_235_4443.png",
-      "微信图片_20260417120205_257_4443.png"
-    ]],
-    ["grid-fandom", "assets/posters/fandom/", [
-      "微信图片_20251013003332_323_8.jpg",
-      "微信图片_20251013003332_324_8.jpg",
-      "微信图片_20251013003333_325_8.jpg",
-      "微信图片_20251013003334_326_8.jpg",
-      "微信图片_20251013003334_327_8.jpg",
-      "微信图片_20251013003437_328_8.jpg",
-      "微信图片_20251013003438_329_8.jpg",
-      "微信图片_20251013003438_330_8.jpg",
-      "微信图片_20251013003439_331_8.jpg",
-      "微信图片_20251105091329_419_8.jpg",
-      "微信图片_20251224211723_510_8.jpg",
-      "微信图片_20260115180400_597_8.jpg",
-      "微信图片_20260115180416_598_8.jpg"
-    ]],
-    ["grid-school", "assets/posters/school/", [
-      "微信图片_20251224211707_498_8.jpg",
-      "微信图片_20251224211708_499_8.jpg",
-      "微信图片_20251224211709_500_8.jpg",
-      "微信图片_20251224211711_501_8.jpg",
-      "微信图片_20251224211712_502_8.jpg",
-      "微信图片_20251224211715_504_8.jpg",
-      "微信图片_20251224211716_505_8.jpg",
-      "微信图片_20251224211717_506_8.jpg",
-      "微信图片_20251224211719_507_8.jpg",
-      "微信图片_20251224211720_508_8.jpg",
-      "微信图片_20251224211721_509_8.jpg",
-      "微信图片_20260115180452_599_8.jpg"
-    ]]
-  ];
+window.__SETS__ = [
+  ["grid-work", "assets/posters/work/", [
+    "微信图片_20260116031058_603_8.png",
+    "微信图片_20260127140019_700_8.png",
+    "微信图片_20260213112109_1018_8.png",
+    "微信图片_20260213112110_1019_8.png",
+    "微信图片_20260213112111_1020_8.png",
+    "微信图片_20260213112112_1021_8.png",
+    "微信图片_20260213112112_1022_8.png",
+    "微信图片_20260213112113_1023_8.png",
+    "微信图片_20260213112113_1024_8.png",
+    "微信图片_20260213112231_1025_8.png",
+    "微信图片_20260213112232_1026_8.png",
+    "微信图片_20260213112232_1027_8.png",
+    "微信图片_20260218220909_1040_8.png",
+    "微信图片_20260218220909_1041_8.png",
+    "微信图片_20260417013648_235_4443.png",
+    "微信图片_20260417120205_257_4443.png"
+  ]],
+  ["grid-fandom", "assets/posters/fandom/", [
+    "微信图片_20251013003332_323_8.jpg",
+    "微信图片_20251013003332_324_8.jpg",
+    "微信图片_20251013003333_325_8.jpg",
+    "微信图片_20251013003334_326_8.jpg",
+    "微信图片_20251013003334_327_8.jpg",
+    "微信图片_20251013003437_328_8.jpg",
+    "微信图片_20251013003438_329_8.jpg",
+    "微信图片_20251013003438_330_8.jpg",
+    "微信图片_20251013003439_331_8.jpg",
+    "微信图片_20251105091329_419_8.jpg",
+    "微信图片_20251224211723_510_8.jpg",
+    "微信图片_20260115180400_597_8.jpg",
+    "微信图片_20260115180416_598_8.jpg"
+  ]],
+  ["grid-school", "assets/posters/school/", [
+    "微信图片_20251224211707_498_8.jpg",
+    "微信图片_20251224211708_499_8.jpg",
+    "微信图片_20251224211709_500_8.jpg",
+    "微信图片_20251224211711_501_8.jpg",
+    "微信图片_20251224211712_502_8.jpg",
+    "微信图片_20251224211715_504_8.jpg",
+    "微信图片_20251224211716_505_8.jpg",
+    "微信图片_20251224211717_506_8.jpg",
+    "微信图片_20251224211719_507_8.jpg",
+    "微信图片_20251224211720_508_8.jpg",
+    "微信图片_20251224211721_509_8.jpg",
+    "微信图片_20260115180452_599_8.jpg"
+  ]]
+];
 </script>
-<script src="assets/gallery.js"></script>
-<script src="assets/motion.js"></script>
+<script src="assets/config.js"></script>
 <script src="assets/app.js"></script>
+<script src="assets/gallery.js"></script>
 </body>
 </html>
