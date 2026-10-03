@@ -11,10 +11,6 @@ window.SITE_CONFIG = {
   phone: "17555289870",
 
   /* 链接（label 是页面上显示的文字，url 是实际跳转） */
-  portfolio: {
-    label: "follow-builders.onrender.com",
-    url: "https://follow-builders.onrender.com/"
-  },
   github: {
     label: "github.com/caojingzhi1015-bit",
     url: "https://github.com/caojingzhi1015-bit"

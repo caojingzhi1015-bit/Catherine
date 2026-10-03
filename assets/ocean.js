@@ -1,8 +1,9 @@
 /* ══════════════════════════════════════════════════════════════════
-   ocean.js — WebGL 海洋场景
-   · 海浪视频作为底层画布（THREE.VideoTexture）
-   · 顶点/片元级水波扭曲 + 冷色去饱和 + 暗角
-   · 一个漂浮在海里的透明玻璃体：真实折射海浪 + 轻微色散 + 边缘高光
+   ocean.js — WebGL 海洋场景（明亮版）
+   · 海浪视频作为底层画布（THREE.VideoTexture），保持青绿通透、不压暗
+   · 一块真正「透明」的玻璃：RenderTarget + 屏幕空间折射
+     （Screen-space Refraction / Chromatic Dispersion / Fresnel）
+     玻璃本身中性无色，只有边缘一线细白高光；颜色全部来自被折射的海浪
    移动端 / 无 WebGL / 减少动效时：不加载 three，直接用 DOM <video>。
    ══════════════════════════════════════════════════════════════════ */
 (function () {
@@ -52,32 +53,6 @@
     var camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
     camera.position.set(0, 0, 4.2);
 
-    /* ── 环境贴图：程序化的「天空→深海」渐变，给玻璃体高光 ── */
-    var pmrem = new THREE.PMREMGenerator(renderer);
-    var envScene = new THREE.Scene();
-    var envMat = new THREE.ShaderMaterial({
-      side: THREE.BackSide,
-      uniforms: {},
-      vertexShader:
-        "varying vec3 vP; void main(){ vP = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }",
-      fragmentShader: [
-        "varying vec3 vP;",
-        "void main(){",
-        "  float h = normalize(vP).y * 0.5 + 0.5;",
-        "  vec3 top = vec3(0.62, 0.80, 0.88);",       /* 天光 */
-        "  vec3 mid = vec3(0.10, 0.36, 0.46);",       /* 海面 */
-        "  vec3 bot = vec3(0.015, 0.075, 0.105);",    /* 深海 */
-        "  vec3 c = mix(bot, mid, smoothstep(0.0, 0.5, h));",
-        "  c = mix(c, top, smoothstep(0.52, 1.0, h));",
-        "  gl_FragColor = vec4(c, 1.0);",
-        "}"
-      ].join("\n")
-    });
-    envScene.add(new THREE.Mesh(new THREE.SphereGeometry(40, 32, 24), envMat));
-    var envRT = pmrem.fromScene(envScene, 0);
-    scene.environment = envRT.texture;
-    envMat.dispose();
-
     /* ── 海浪视频：底层画布 ──────────────────────────────── */
     video.muted = true;
     video.loop = true;
@@ -89,24 +64,22 @@
     tex.magFilter = THREE.LinearFilter;
     tex.generateMipmaps = false;
 
-    /* 视频尺寸未知时先按 16:9 处理 */
     var aspect16x9 = 16 / 9;
 
-    var uniforms = {
+    /* ══ 背景：明亮的青绿海水 ══════════════════════════════ */
+    var bgUniforms = {
       uTex: { value: tex },
-      uTime: { value: 0 },
-      uAspectCorr: { value: 1 }
+      uTime: { value: 0 }
     };
 
     var bgMat = new THREE.ShaderMaterial({
-      uniforms: uniforms,
+      uniforms: bgUniforms,
       depthWrite: false,
       vertexShader:
         "varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }",
       fragmentShader: [
         "uniform sampler2D uTex;",
         "uniform float uTime;",
-        "uniform float uAspectCorr;",
         "varying vec2 vUv;",
         "vec3 toSRGB(vec3 c){",
         "  c = max(c, vec3(0.0));",
@@ -115,23 +88,24 @@
         "void main(){",
         "  vec2 uv = vUv;",
         /* 三层正弦叠加：缓慢、克制的水面呼吸 */
-        "  float w1 = sin(uv.y * 8.0 + uTime * 0.52) * 0.0044;",
-        "  float w2 = sin(uv.x * 6.2 - uTime * 0.39) * 0.0037;",
-        "  float w3 = sin((uv.x + uv.y) * 14.0 + uTime * 0.86) * 0.0016;",
+        "  float w1 = sin(uv.y * 8.0 + uTime * 0.52) * 0.0040;",
+        "  float w2 = sin(uv.x * 6.2 - uTime * 0.39) * 0.0034;",
+        "  float w3 = sin((uv.x + uv.y) * 14.0 + uTime * 0.86) * 0.0014;",
         "  vec2 o = vec2(w1 + w2, w2 * 0.75 + w3);",
-        /* RGB 采样点微错位 → 水下的轻微色散 */
+        /* RGB 采样点微错位 → 水面下极轻的色散 */
         "  float r = texture2D(uTex, uv + o * 1.00).r;",
-        "  float g = texture2D(uTex, uv + o * 1.22).g;",
-        "  float b = texture2D(uTex, uv + o * 1.46).b;",
+        "  float g = texture2D(uTex, uv + o * 1.12).g;",
+        "  float b = texture2D(uTex, uv + o * 1.26).b;",
         "  vec3 c = vec3(r, g, b);",
-        /* 去饱和 + 压向深蓝，统一电影感 */
+        /* 只做极轻微的统一，保留海水原本的青绿与通透 */
         "  float l = dot(c, vec3(0.299, 0.587, 0.114));",
-        "  c = mix(c, vec3(l), 0.26);",
-        "  c = mix(c, vec3(0.018, 0.120, 0.170), 0.30);",
-        "  c *= 0.90;",
-        /* 暗角，把视线收进画面中心 */
-        "  float vig = smoothstep(1.20, 0.16, length((vUv - 0.5) * vec2(1.02, 1.12)) * 1.5);",
-        "  c *= mix(0.50, 1.0, vig);",
+        "  c = mix(c, vec3(l), 0.06);",
+        /* 提亮：海水本身是画面最重要的颜色来源 */
+        "  c *= 1.07;",
+        "  c = mix(c, vec3(1.0), 0.03);",
+        /* 极轻暗角，只为把视线收进中心，不压暗画面 */
+        "  float vig = smoothstep(1.28, 0.20, length((vUv - 0.5) * vec2(1.02, 1.10)) * 1.5);",
+        "  c *= mix(0.90, 1.0, vig);",
         "  gl_FragColor = vec4(toSRGB(c), 1.0);",
         "}"
       ].join("\n")
@@ -141,55 +115,96 @@
     bg.position.z = -2;
     scene.add(bg);
 
-    /* ── 玻璃体：漂浮在海中的透明观察窗口 ────────────────── */
-    var glassGeo = new RoundedBoxGeometry(1.16, 1.16, 1.16, 8, 0.23);
-    var glassMat = new THREE.MeshPhysicalMaterial({
-      color: 0xffffff,
-      metalness: 0,
-      roughness: 0.055,
-      transmission: 1,
-      thickness: 1.55,
-      ior: 1.36,
-      envMapIntensity: 1.25,
-      clearcoat: 0.7,
-      clearcoatRoughness: 0.14,
-      iridescence: 0.28,
-      iridescenceIOR: 1.28,
-      attenuationColor: new THREE.Color(0x1e7280),
-      attenuationDistance: 3.2,
-      specularIntensity: 1
+    /* ══ 离屏缓冲：把「不含玻璃的海水」先渲染一遍 ══════════ */
+    var rt = new THREE.WebGLRenderTarget(1, 1, {
+      minFilter: THREE.LinearFilter,
+      magFilter: THREE.LinearFilter,
+      format: THREE.RGBAFormat,
+      depthBuffer: true,
+      stencilBuffer: false
     });
-    /* 色散（RGB 分离）在 r167+ 支持，做能力检测后再赋值 */
-    if ("dispersion" in glassMat) glassMat.dispersion = 4.2;
 
+    /* ══ 玻璃：屏幕空间折射（中性、无色、只有白色 Fresnel 边缘） ══ */
+    var glassUniforms = {
+      uScene: { value: rt.texture },
+      uResolution: { value: new THREE.Vector2(1, 1) },
+      uRefractPower: { value: 0.052 },   /* 折射偏移强度：小 → 内部能看清原始海浪 */
+      uDispersion: { value: 0.075 },     /* 色散：轻微、高级，不做彩虹塑料 */
+      uFresnelPower: { value: 3.4 },     /* 边缘高光收得细而亮 */
+      uEdgeGain: { value: 1.18 }
+    };
+
+    var glassMat = new THREE.ShaderMaterial({
+      uniforms: glassUniforms,
+      transparent: false,
+      depthWrite: true,
+      vertexShader: [
+        "varying vec3 vN;",
+        "varying vec3 vViewPos;",
+        "varying vec4 vClip;",
+        "void main(){",
+        "  vN = normalize(normalMatrix * normal);",
+        "  vec4 mv = modelViewMatrix * vec4(position, 1.0);",
+        "  vViewPos = mv.xyz;",
+        "  vClip = projectionMatrix * mv;",
+        "  gl_Position = vClip;",
+        "}"
+      ].join("\n"),
+      fragmentShader: [
+        "uniform sampler2D uScene;",
+        "uniform vec2 uResolution;",
+        "uniform float uRefractPower;",
+        "uniform float uDispersion;",
+        "uniform float uFresnelPower;",
+        "uniform float uEdgeGain;",
+        "varying vec3 vN;",
+        "varying vec3 vViewPos;",
+        "varying vec4 vClip;",
+        "void main(){",
+        "  vec3 N = normalize(vN);",
+        "  vec3 V = normalize(-vViewPos);",
+        "  float ndv = clamp(abs(dot(N, V)), 0.0, 1.0);",
+        /* Fresnel：正视近乎 0，掠射趋近 1 —— 只有边缘才亮 */
+        "  float fres = pow(1.0 - ndv, uFresnelPower);",
+        /* 屏幕空间 UV */
+        "  vec2 uv = (vClip.xy / vClip.w) * 0.5 + 0.5;",
+        /* 折射偏移：正中心几乎不动，掠射处偏移更强 */
+        "  vec2 off = N.xy * uRefractPower * (0.30 + 0.70 * (1.0 - ndv));",
+        /* 色散：RGB 三通道分别采样，幅度随 Fresnel 增大 */
+        "  float d = uDispersion * (0.35 + fres);",
+        "  vec3 col;",
+        "  col.r = texture2D(uScene, uv + off * (1.0 + d)).r;",
+        "  col.g = texture2D(uScene, uv + off).g;",
+        "  col.b = texture2D(uScene, uv + off * (1.0 - d)).b;",
+        /* 边缘：一线细白高光，不带任何固有蓝或其他基色 */
+        "  vec3 white = vec3(0.985, 0.995, 1.0);",
+        "  col = mix(col, white, clamp(fres * uEdgeGain * uEdgeGain, 0.0, 0.90));",
+        "  col += white * fres * 0.22;",
+        "  gl_FragColor = vec4(col, 1.0);",
+        "}"
+      ].join("\n")
+    });
+
+    var glassGeo = new RoundedBoxGeometry(1.16, 1.16, 1.16, 8, 0.23);
     var glass = new THREE.Mesh(glassGeo, glassMat);
     var glassPivot = new THREE.Group();
-    glass.position.set(0, 0, 0);
     glassPivot.add(glass);
     glassPivot.position.set(1.52, 0.12, 0);
     scene.add(glassPivot);
-
-    /* 一层极薄的柔光壳，模拟玻璃边缘的高光溢出 */
-    var glowMat = new THREE.MeshBasicMaterial({
-      color: 0x8fd2e0,
-      transparent: true,
-      opacity: 0.05,
-      side: THREE.BackSide,
-      depthWrite: false,
-      blending: THREE.AdditiveBlending
-    });
-    var glow = new THREE.Mesh(new RoundedBoxGeometry(1.34, 1.34, 1.34, 6, 0.3), glowMat);
-    glow.position.set(0, 0, 0);
-    glassPivot.add(glow);
 
     /* ── 尺寸 ─────────────────────────────────────────────── */
     var stage = hero.querySelector(".hero__stage") || hero;
     function resize() {
       var w = stage.clientWidth || window.innerWidth;
       var h = stage.clientHeight || window.innerHeight;
+      var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       renderer.setSize(w, h, false);
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
+
+      /* 离屏缓冲与画布同尺寸：屏幕空间折射需要 1:1 对应 */
+      rt.setSize(Math.max(2, Math.round(w * dpr)), Math.max(2, Math.round(h * dpr)));
+      glassUniforms.uResolution.value.set(w * dpr, h * dpr);
 
       var vAspect = video.videoWidth && video.videoHeight
         ? video.videoWidth / video.videoHeight
@@ -201,7 +216,6 @@
       var pw = vw, ph = vw / vAspect;
       if (ph < vh) { ph = vh; pw = vh * vAspect; }
       bg.scale.set(pw, ph, 1);
-      uniforms.uAspectCorr.value = camera.aspect;
     }
     resize();
     if (window.ResizeObserver) new ResizeObserver(resize).observe(stage);
@@ -233,19 +247,19 @@
     var pageHidden = false;
     document.addEventListener("visibilitychange", function () { pageHidden = document.hidden; });
 
-    /* ── 主循环 ───────────────────────────────────────────── */
+    /* ── 主循环：两遍渲染 ─────────────────────────────────── */
     var clock = new THREE.Clock();
     var running = false;
 
     function frame() {
       if (!visible || pageHidden) { running = false; return; }
       var t = clock.getElapsedTime();
-      uniforms.uTime.value = t;
+      bgUniforms.uTime.value = t;
 
       mx += (tmx - mx) * 0.045;
       my += (tmy - my) * 0.045;
 
-      /* 玻璃体：缓慢自转 + 鼠标视差 + 随滚动上浮 */
+      /* 玻璃：缓慢自转 + 鼠标视差 + 随滚动上浮 */
       glassPivot.rotation.y = t * 0.16 + mx * 0.34;
       glassPivot.rotation.x = Math.sin(t * 0.24) * 0.09 - my * 0.22;
       glassPivot.rotation.z = Math.sin(t * 0.19) * 0.06;
@@ -258,7 +272,16 @@
       bg.position.x = mx * -0.1;
       bg.position.y = my * -0.07 + scrollP * 0.6;
 
+      /* 第 1 遍：把海水渲染进离屏缓冲 */
+      glassPivot.visible = false;
+      renderer.setRenderTarget(rt);
       renderer.render(scene, camera);
+
+      /* 第 2 遍：带着玻璃渲染到屏幕，玻璃采样离屏结果做折射 */
+      glassPivot.visible = true;
+      renderer.setRenderTarget(null);
+      renderer.render(scene, camera);
+
       requestAnimationFrame(frame);
     }
 
@@ -278,10 +301,8 @@
 
     window.addEventListener("pagehide", function () {
       renderer.dispose();
+      rt.dispose();
       tex.dispose();
-      setDirty();
     });
-
-    function setDirty() { /* 预留 */ }
   }
 })();

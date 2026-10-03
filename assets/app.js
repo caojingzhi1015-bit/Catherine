@@ -49,7 +49,6 @@
     if (el) { el.setAttribute("href", v.url); el.setAttribute("target", "_blank"); el.setAttribute("rel", "noopener"); }
     setText(id, v.label || v.url);
   }
-  wire("portfolio", "cPortfolio");
   wire("github", "cGithub");
   wire("instagram", "cInstagram");
   wire("weibo", "cWeibo");
@@ -63,8 +62,9 @@
   var nodes = document.querySelectorAll("[data-en]");
   var titleEl = document.querySelector("title[data-en]");
 
+  /* 用 innerHTML 保存/还原，避免抹掉标题里的 <em> 等内联标签 */
   Array.prototype.forEach.call(nodes, function (el) {
-    if (!el.hasAttribute("data-zh")) el.setAttribute("data-zh", el.textContent.trim());
+    if (!el.hasAttribute("data-zh")) el.setAttribute("data-zh", el.innerHTML.trim());
   });
   if (titleEl && !titleEl.hasAttribute("data-zh")) {
     titleEl.setAttribute("data-zh", titleEl.textContent.trim());
@@ -73,7 +73,7 @@
   function applyLang(lang) {
     Array.prototype.forEach.call(nodes, function (el) {
       var t = el.getAttribute(lang === "en" ? "data-en" : "data-zh");
-      if (t) el.textContent = t;
+      if (t) el.innerHTML = t;
     });
     root.setAttribute("lang", lang === "en" ? "en" : "zh-CN");
     if (langToggle) langToggle.textContent = lang === "en" ? "中文" : "EN";
@@ -96,18 +96,16 @@
 
   /* ── 4. 标记渐显元素（在首帧之前完成，避免闪白） ───────────── */
   var REVEAL = [
-    ".practice__intro", ".folio__intro", ".lab__intro",
     ".sec-head",
     ".about__title", ".about__body", ".about__portrait",
-    ".wordstack__w",
-    ".track",
-    ".xp__head", ".xp__stats", ".xp__duties",
-    ".folio__item", ".cap", ".caps__lang",
-    ".culture__title", ".culture__note",
-    ".lab__title", ".lab__item",
-    ".contact__title", ".crow", ".contact__sign"
+    ".tl__head", ".tl__row",
+    ".proj__title", ".proj__intro", ".prow",
+    ".folio__intro", ".folio__item",
+    ".skills__title", ".skill", ".skills__lang",
+    ".contact__title", ".crow",
+    ".case__sec", ".case__nums", ".case__next"
   ];
-  var stagger = [".wordstack", ".xp__stats", ".folio__grid", ".tracks", ".caps__grid", ".lab__list", ".culture__title"];
+  var stagger = [".tl__list", ".ptable", ".folio__grid", ".skills__grid"];
   Array.prototype.forEach.call(document.querySelectorAll(REVEAL.join(",")), function (el) {
     if (!el.hasAttribute("data-reveal")) el.setAttribute("data-reveal", "");
   });
