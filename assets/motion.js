@@ -45,8 +45,8 @@
       var target = document.querySelector(id);
       if (!target) return;
       e.preventDefault();
-      if (lenis) lenis.scrollTo(target, { offset: -50, duration: 1.4 });
-      else target.scrollIntoView({ behavior: "smooth", block: "start" });
+      if (lenis) lenis.scrollTo(target, { offset: -78, duration: 1.4 });
+      else window.scrollTo({ top: target.getBoundingClientRect().top + window.pageYOffset - 78, behavior: "smooth" });
     });
   });
 
