@@ -1890,3 +1890,204 @@ body.case-page { background: linear-gradient(180deg, #d9eeeb 0%, #e7f6f1 34%, #f
 .case { background: transparent; }
 body.case-page .grain { mix-blend-mode: multiply; opacity: .18; }
 body.case-page .masthead.is-stuck { background: rgba(231, 246, 241, .9); }
+
+/* ══════════════════════════════════════════════════════════════════
+   17. 板块边框精修 —— 只动三个板块：WHO AM I / 能力 / 作品
+   允许属性：border / border-radius / box-shadow / background（卡片）
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── 17.1 WHO AM I —— 玻璃质感边框 + 顶部高光（6px 圆角）──────────
+   说明：本板块位于「水面」浅色场景，文字是深墨色，
+   因此保留原本的浅色玻璃基调（只降低不透明度），
+   边框 / 高光 / 阴影 / 圆角 / hover 全部按规范执行。            */
+.scene--surface .about__body.glass,
+.scene--surface .about__facts {
+  background: rgba(255, 255, 255, .42) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  backdrop-filter: blur(16px) saturate(1.3);
+  border: 0.5px solid rgba(11, 79, 90, .16) !important;
+  border-radius: 6px !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .85),
+    0 8px 32px rgba(6, 44, 56, .16) !important;
+  transition: border-color .3s ease, box-shadow .3s ease, background .3s ease;
+}
+.scene--surface .about__body.glass:hover,
+.scene--surface .about__facts:hover {
+  border-color: rgba(79, 179, 201, .55) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .95),
+    0 12px 40px rgba(79, 179, 201, .22) !important;
+}
+/* 证件照容器：极细边 + 顶部高光，6px 圆角 */
+.about__portrait img {
+  border: 0.5px solid rgba(11, 79, 90, .18) !important;
+  border-radius: 6px !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .55),
+    0 8px 32px rgba(6, 44, 56, .22) !important;
+  transition: border-color .3s ease, box-shadow .3s ease;
+}
+.about__portrait:hover img {
+  border-color: rgba(79, 179, 201, .5) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .7),
+    0 12px 40px rgba(79, 179, 201, .20) !important;
+}
+
+/* ── 17.2 能力板块 —— 渐变光晕边框 + 鼠标跟随（8px 圆角）───────── */
+.skills__grid .skill {
+  position: relative;
+  background: rgba(15, 28, 38, .5) !important;
+  border: 0 !important;
+  border-radius: 8px !important;
+  overflow: hidden;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .12),
+    0 8px 32px rgba(0, 0, 0, .25) !important;
+  transition: background .3s ease, box-shadow .3s ease;
+}
+/* 渐变描边：左上绿松石蓝 → 右下陶土色 */
+.skills__grid .skill::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  padding: 1px;
+  background: linear-gradient(135deg,
+    rgba(79, 179, 201, .5),
+    rgba(79, 179, 201, .05) 40%,
+    rgba(79, 179, 201, .05) 60%,
+    rgba(176, 122, 92, .3));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 4;
+}
+/* 鼠标跟随光晕 */
+.skills__grid .skill::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 10px;
+  background: radial-gradient(400px circle at var(--mx, 50%) var(--my, 0%),
+    rgba(79, 179, 201, .12), transparent 40%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .3s ease;
+  z-index: 1;
+}
+.skills__grid .skill:hover::after { opacity: 1; }
+.skills__grid .skill:hover {
+  background: rgba(19, 36, 48, .62) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .16),
+    0 12px 40px rgba(79, 179, 201, .08) !important;
+}
+/* 卡片内容压在描边与光晕之上 */
+.skills__grid .skill > * { position: relative; z-index: 2; }
+
+/* ── 17.3 作品板块 —— 极细边框 + 四角 L 形装饰（4px 圆角）──────── */
+@property --cn {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: rgba(79, 179, 201, .4);
+}
+.scene--droplet .folio__item {
+  --cn: rgba(79, 179, 201, .4);
+  position: relative;
+  border: 0.5px solid rgba(255, 255, 255, .10) !important;
+  border-radius: 4px !important;
+  background: rgba(15, 28, 38, .6) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .08),
+    0 8px 32px rgba(0, 0, 0, .25) !important;
+  transition: border-color .25s ease, background .25s ease, --cn .25s ease;
+}
+/* 四角 L 形线条（左上 / 右上 / 左下 / 右下） */
+.scene--droplet .folio__item::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 3;
+  background:
+    linear-gradient(var(--cn), var(--cn)) left    top    / 1px  12px no-repeat,
+    linear-gradient(var(--cn), var(--cn)) left    top    / 12px 1px  no-repeat,
+    linear-gradient(var(--cn), var(--cn)) right   top    / 1px  12px no-repeat,
+    linear-gradient(var(--cn), var(--cn)) right   top    / 12px 1px  no-repeat,
+    linear-gradient(var(--cn), var(--cn)) left    bottom / 1px  12px no-repeat,
+    linear-gradient(var(--cn), var(--cn)) left    bottom / 12px 1px  no-repeat,
+    linear-gradient(var(--cn), var(--cn)) right   bottom / 1px  12px no-repeat,
+    linear-gradient(var(--cn), var(--cn)) right   bottom / 12px 1px  no-repeat;
+}
+.scene--droplet .folio__item:hover {
+  --cn: rgba(79, 179, 201, .8);
+  border-color: rgba(79, 179, 201, .2) !important;
+  background: rgba(19, 36, 48, .68) !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   18. 首屏 Catherine：参考海边海报的细线衬线花体与留白
+   将九个字母保持为一整段可选中文字，让手写连笔自然衔接
+   ══════════════════════════════════════════════════════════════════ */
+.hero__title--lost {
+  font-family: "Pinyon Script", "Brush Script MT", cursive;
+  font-weight: 400;
+  font-size: clamp(94px, 22vw, 330px);
+  line-height: .82;
+  letter-spacing: 0;
+  text-transform: none;
+  margin-left: -.02em;
+  white-space: nowrap;
+  color: #f5f0e8;
+  -webkit-text-fill-color: #f5f0e8;
+  text-shadow: 0 4px 48px rgba(8, 50, 64, .32), 0 1px 2px rgba(8, 50, 64, .18);
+}
+.hero__title--lost .ht { position: relative; display: inline-block; }
+.hero__title--lost .ht__word { display: inline-block; }
+
+/* 覆盖旧标题的渐变裁切，只在这个 h1 内使用纯米白手写字 */
+.scene--beach .hero__title--lost span {
+  background-image: none !important;
+  -webkit-background-clip: border-box !important;
+  background-clip: border-box !important;
+  filter: none !important;
+}
+
+/* 笔画下方各一条不闭合的收笔线；左钩从 C 下穿过，右钩从 e 收尾 */
+.hero__title--lost .ht__fl { position: absolute; overflow: visible; pointer-events: none; }
+.hero__title--lost .ht__fl path {
+  fill: none;
+  stroke: #f5f0e8;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+.hero__title--lost .ht__fl--c { left: -.07em; top: .43em; width: 1.0em; height: .27em; }
+.hero__title--lost .ht__fl--e { right: -.1em; top: .44em; width: .9em; height: .24em; }
+
+@media (max-width: 760px) {
+  /* 书写字仍是一整词，缩放到安全宽度，而非逐字母折行或被截断 */
+  .hero__title--lost { font-size: clamp(68px, 24vw, 96px); }
+  .hero__title--lost .ht__fl--c { width: .76em; }
+  .hero__title--lost .ht__fl--e { width: .68em; }
+}
+
+/* 一整词从下方淡入，之后书写两条细线；不拆字保证自然连笔 */
+@keyframes htIn   { from { opacity: 0; transform: translateY(36px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes htDraw { to { stroke-dashoffset: 0; } }
+html.is-ready .hero__title--lost .ht__word { animation: htIn .9s cubic-bezier(.16, 1, .3, 1) both; }
+html.is-ready .hero__title--lost .ht__fl path {
+  stroke-dasharray: 560;
+  stroke-dashoffset: 560;
+  animation: htDraw 1.4s ease-out .7s forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  html.is-ready .hero__title--lost .ht__word,
+  html.is-ready .hero__title--lost .ht__fl path { animation: none !important; }
+  .hero__title--lost .ht__fl path { stroke-dashoffset: 0; }
+}

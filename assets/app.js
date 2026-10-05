@@ -140,10 +140,17 @@
   /* ── 6. 卷首过场：JS 就绪即收幕 ───────────────────────────── */
   var preload = document.getElementById("preload");
   if (preload) {
-    var done = function () { preload.classList.add("is-done"); };
+    var done = function () {
+      if (preload.classList.contains("is-done")) return;
+      preload.classList.add("is-done");
+      /* 卷首幕布收起后，才让首屏大标题的字母依次入场 */
+      root.classList.add("is-ready");
+    };
     if (document.readyState === "complete") done();
     else window.addEventListener("load", done);
     setTimeout(done, 2600);   // 兜底：无论如何最长 2.6s
+  } else {
+    root.classList.add("is-ready");
   }
 
   /* ── 7. 兜底：若动效库没加载成功，让所有内容可见 ─────────── */
@@ -151,5 +158,24 @@
     setTimeout(function () {
       if (!window.__jscMotionReady) root.classList.add("no-anim");
     }, 1200);
+  });
+
+  /* ── 8. 刷新后统一从顶部开始（避免浏览器恢复滚动位置，
+        直接落进几乎全黑的水下场景，看起来像「刷新变黑」） ──── */
+  try { if (history.scrollRestoration) history.scrollRestoration = "manual"; } catch (e) {}
+  if (!window.location.hash) {
+    try { window.scrollTo(0, 0); } catch (e) {}
+    window.addEventListener("load", function () {
+      if (!window.location.hash) { try { window.scrollTo(0, 0); } catch (e) {} }
+    });
+  }
+
+  /* ── 9. 能力板块：卡片鼠标跟随光晕（只写 CSS 变量） ──────── */
+  Array.prototype.forEach.call(document.querySelectorAll(".skills__grid .skill"), function (card) {
+    card.addEventListener("mousemove", function (e) {
+      var r = card.getBoundingClientRect();
+      card.style.setProperty("--mx", (e.clientX - r.left) + "px");
+      card.style.setProperty("--my", (e.clientY - r.top) + "px");
+    }, { passive: true });
   });
 })();

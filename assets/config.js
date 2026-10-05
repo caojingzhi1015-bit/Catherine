@@ -22,7 +22,7 @@ window.SITE_CONFIG = {
   xiaohongshu: { label: "", url: "" },
 
   /* 简历文件（下载按钮） */
-  resume: "assets/曹静致-AI内容运营-简历.pdf",
+  resume: "assets/李贤在ai简历.pdf",
 
   /* 目标岗位 */
   roles: {

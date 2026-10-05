@@ -57,7 +57,7 @@
       .from(".hero__tl > *", { y: 16, opacity: 0, duration: 1.1, stagger: 0.07 })
       .from(".hero__tr .meta", { y: 12, opacity: 0, duration: 1, stagger: 0.06 }, "<0.1")
       .from(".hero__kicker", { y: 14, opacity: 0, duration: 1 }, "<")
-      .from(".hero__title span", { yPercent: 26, opacity: 0, duration: 1.5 }, "<0.05")
+      /* 大标题自身由 CSS（花体 × 大字）负责入场，避免两套动画互相打架 */
       .from(".hero__sub", { y: 12, opacity: 0, duration: 1 }, "<0.25")
       .from(".hero__intro > *", { y: 14, opacity: 0, duration: 1, stagger: 0.08 }, "<0.1")
       .from(".hero__badge", { y: 12, opacity: 0, duration: 1 }, "<0.1")
@@ -292,7 +292,22 @@
     refreshTimer = setTimeout(function () { ScrollTrigger.refresh(); }, 220);
   });
   if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(function () { ScrollTrigger.refresh(); });
+    document.fonts.ready.then(function () { ScrollTrigger.refresh(); revealInView(); });
   }
-  window.addEventListener("load", function () { setTimeout(function () { ScrollTrigger.refresh(); }, 300); });
+  window.addEventListener("load", function () {
+    setTimeout(function () { ScrollTrigger.refresh(); revealInView(); }, 300);
+    setTimeout(revealInView, 1600);
+  });
+
+  /* 安全网：刷新 / 恢复滚动后，任何「已在视口内却还是透明」的元素直接显形，
+     避免出现「背景在动、内容全隐身」的黑屏观感。 */
+  function revealInView() {
+    var h = window.innerHeight || 800;
+    Array.prototype.forEach.call(document.querySelectorAll("[data-reveal]"), function (el) {
+      var r = el.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > h * 0.94) return;
+      var op = parseFloat(gsap.getProperty(el, "opacity"));
+      if (isNaN(op) || op < 0.9) gsap.to(el, { opacity: 1, y: 0, duration: .6, overwrite: true });
+    });
+  }
 })();

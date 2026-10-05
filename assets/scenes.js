@@ -106,45 +106,71 @@
   })();
 
   /* ══════════════════════════════════════════════════════════════
-     二、回退路径
+     二、回退路径（WebGL 是增强，不是内容生存的前提）
+     —— 无论什么原因失败，页面都保持「海浪 + 巨大字体 + 完整内容」
      ══════════════════════════════════════════════════════════════ */
-  function fallback() {
-    canvas.style.display = "none";
+  var fbRaf = 0;
+  function fallback(reason) {
+    if (reason) console.warn("[scenes] 回退到静态海浪：", reason);
+    if (ocean.classList.contains("ocean--fallback")) return;
+    ocean.classList.remove("ocean--webgl");
     ocean.classList.add("ocean--fallback");
-    try { video.play().catch(function () {}); } catch (e) {}
+    canvas.style.display = "none";
+    try { var p = video.play(); if (p && p.catch) p.catch(function () {}); } catch (e) {}
+    if (fbRaf) return;                       /* 回退循环只允许存在一条 */
     (function tick() {
+      fbRaf = requestAnimationFrame(tick);
       var t = (S += (STarget - S) * 0.12);
       endT += (endTarget - endT) * 0.12;
       syncMode(t);
       ocean.style.setProperty("--end", endT.toFixed(3));
-      requestAnimationFrame(tick);
     })();
   }
 
-  if (reduce || !wide || !hasGL) { fallback(); return; }
+  /* 移动端不再直接放弃 WebGL：与桌面同一视觉系统，只是降分辨率。
+     真正跑不动时由「首帧看门狗 + 帧率看门狗」降级回静态海浪。 */
+  if (reduce || !hasGL) { fallback(!hasGL ? "no webgl2" : "reduced-motion"); return; }
 
   /* ══════════════════════════════════════════════════════════════
      三、WebGL 场景
      ══════════════════════════════════════════════════════════════ */
-  Promise.all([
-    import("three"),
-    import("three/addons/geometries/RoundedBoxGeometry.js")
-  ]).then(function (mods) {
-    try { boot(mods[0], mods[1].RoundedBoxGeometry); }
-    catch (err) { console.warn("[scenes] WebGL 场景不可用，回退：", err); fallback(); }
-  }).catch(function (err) {
-    console.warn("[scenes] three 加载失败，回退：", err);
-    fallback();
+  var booting = false;
+  function loadScene() {
+    if (booting) return;
+    booting = true;
+    Promise.all([
+      import("three"),
+      import("three/addons/geometries/RoundedBoxGeometry.js")
+    ]).then(function (mods) {
+      try { boot(mods[0], mods[1].RoundedBoxGeometry); }
+      catch (err) { booting = false; fallback(err && err.message); }
+    }).catch(function (err) {
+      booting = false;
+      fallback(err && err.message);
+    });
+  }
+  loadScene();
+
+  /* bfcache 恢复（前进 / 后退回来）：WebGL 资源已在 pagehide 被释放，
+     必须重新初始化，否则会留下一个黑屏的死画布。 */
+  window.addEventListener("pageshow", function (e) {
+    if (!e.persisted) return;
+    if (ocean.classList.contains("ocean--fallback")) return;
+    try { location.reload(); } catch (err) {}
   });
 
   function boot(THREE, RoundedBoxGeometry) {
+    /* 画质档位：窄屏 / 低核数设备只降分辨率与抗锯齿，视觉语言不变 */
+    var lowPower = !wide || (navigator.hardwareConcurrency || 4) <= 4;
+    var DPR = lowPower ? 1 : 1.5;
+
     var renderer = new THREE.WebGLRenderer({
       canvas: canvas,
-      antialias: true,
+      antialias: !lowPower,
       alpha: false,
       powerPreference: "high-performance"
     });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, DPR));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.NoToneMapping;
     renderer.autoClear = false;               /* 两遍渲染，手动清屏 */
@@ -274,25 +300,61 @@
     var cubeCam = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
     cubeCam.position.set(0, 0, 4);
 
+    /* ── 视频就绪判定：只在真正可渲染时才采样 VideoTexture ── */
+    function videoUsable() {
+      return video.readyState >= 2 /* HAVE_CURRENT_DATA */ && video.videoWidth > 0;
+    }
+    function syncVideo() {
+      if (videoUsable()) {
+        oceanU.uVidAspect.value = video.videoWidth / video.videoHeight;
+        oceanU.uHasVideo.value = 1;
+      } else {
+        oceanU.uHasVideo.value = 0;   /* 未就绪 → 走程序化海面，绝不采样空纹理 */
+      }
+    }
+
     /* ── 尺寸 ───────────────────────────────────────────────── */
     var aspect = 1;
-    function resize() {
+    var resizePending = 0;
+    function resizeNow() {
+      resizePending = 0;
       var w = window.innerWidth, h = window.innerHeight;
-      var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      var dpr = Math.min(window.devicePixelRatio || 1, DPR);
+      renderer.setPixelRatio(dpr);
       renderer.setSize(w, h, false);
       aspect = w / Math.max(1, h);
       cubeCam.aspect = aspect;
       cubeCam.updateProjectionMatrix();
       rt.setSize(Math.max(2, Math.round(w * dpr)), Math.max(2, Math.round(h * dpr)));
       oceanU.uAspect.value = aspect;
-      if (video.videoWidth && video.videoHeight) {
-        oceanU.uVidAspect.value = video.videoWidth / video.videoHeight;
-        oceanU.uHasVideo.value = 1;
-      }
+      syncVideo();
     }
-    resize();
+    function resize() {                       /* resize 合并到下一帧，避免抖动 */
+      if (resizePending) return;
+      resizePending = requestAnimationFrame(resizeNow);
+    }
+    resizeNow();
     window.addEventListener("resize", resize);
-    video.addEventListener("loadeddata", resize);
+    window.addEventListener("orientationchange", resize);
+    ["loadedmetadata", "loadeddata", "canplay", "playing"].forEach(function (ev) {
+      video.addEventListener(ev, syncVideo);
+    });
+    ["error", "stalled", "abort", "emptied"].forEach(function (ev) {
+      video.addEventListener(ev, function () { oceanU.uHasVideo.value = 0; });
+    });
+
+    /* ── WebGL 上下文丢失 / 恢复：绝不留下永久黑屏 ─────────── */
+    var contextLost = false;
+    canvas.addEventListener("webglcontextlost", function (e) {
+      e.preventDefault();                    /* 允许后续 restore */
+      contextLost = true;
+      stopLoop();
+    }, false);
+    canvas.addEventListener("webglcontextrestored", function () {
+      contextLost = false;
+      try { resizeNow(); } catch (err) {}
+      startLoop();
+    }, false);
 
     /* ── 鼠标视差 ───────────────────────────────────────────── */
     var mx = 0, my = 0, tmx = 0, tmy = 0;
@@ -351,18 +413,24 @@
       };
     }
 
-    /* ── 主循环 ─────────────────────────────────────────────── */
+    /* ── 主循环：全生命周期只有这一条 RAF ───────────────────── */
     var clock = new THREE.Clock();
-    var pageHidden = false;
-    document.addEventListener("visibilitychange", function () { pageHidden = document.hidden; });
+    var pageHidden = document.hidden === true;
+    var raf = 0;
+    var frames = 0;
+    var slowFrames = 0;
 
-    var dragging = 0;
     function frame() {
-      requestAnimationFrame(frame);
-      if (pageHidden) { clock.getDelta(); return; }
+      raf = requestAnimationFrame(frame);
+      if (pageHidden || contextLost) { clock.getDelta(); return; }
+      frames++;
 
       var dt = Math.min(0.05, clock.getDelta());
       var t = clock.elapsedTime;
+
+      /* 看门狗 2：跑得太慢（<22fps）→ 降级到静态海浪，别让手机烫成幻灯片 */
+      if (frames > 60 && frames < 400 && dt > 0.045) slowFrames++;
+      if (frames === 400 && slowFrames > 120) { stopLoop(); fallback("帧率过低"); return; }
 
       /* 平滑场景进度（比原生滚动更柔和，天然消除硬切） */
       S += (STarget - S) * Math.min(1, dt * 6.5);
@@ -424,25 +492,74 @@
       if (shown) renderer.render(cubeScene, cubeCam);
     }
 
-    /* 启动：视频就绪即开始，最长等 1.6s */
+    function startLoop() {
+      if (raf) return;
+      clock.getDelta();                       /* 丢掉隐藏期间累积的时间差 */
+      raf = requestAnimationFrame(frame);
+    }
+    function stopLoop() {
+      if (raf) { cancelAnimationFrame(raf); raf = 0; }
+    }
+
+    /* 切到后台：停渲染 + 暂停视频；回到前台：恢复播放并重新起循环 */
+    document.addEventListener("visibilitychange", function () {
+      pageHidden = document.hidden === true;
+      if (pageHidden) {
+        stopLoop();
+        try { video.pause(); } catch (e) {}
+      } else {
+        try { var pv = video.play(); if (pv && pv.catch) pv.catch(function () {}); } catch (e) {}
+        syncVideo();
+        startLoop();
+      }
+    });
+
+    /* 启动：视频就绪即开始；即便 video 永久失败，1.6s 后也照样渲染 */
     ocean.classList.add("ocean--webgl");
     var started = false;
     function start() {
       if (started) return;
       started = true;
+      try { resizeNow(); } catch (e) {}
       clock.start();
-      requestAnimationFrame(frame);
+      startLoop();
     }
-    var p = video.play();
-    if (p && p.catch) p.catch(function () {});
+    try { var p = video.play(); if (p && p.catch) p.catch(function () {}); } catch (e) {}
+    video.addEventListener("canplay", start, { once: true });
     video.addEventListener("playing", start, { once: true });
     setTimeout(start, 1600);
 
+    /* 看门狗 1：5s 内一帧都没画出来（且页面可见）→ 判定渲染失败 */
+    setTimeout(function () {
+      if (frames < 3 && !document.hidden) { stopLoop(); fallback("渲染循环未启动"); }
+    }, 5000);
+
+    /* 调试面板：?debug 或 #debug 时显示 WEBGL / VIDEO / TEXTURE / FONT / RAF */
+    if (/[?&#]debug\b/.test(location.search + location.hash)) {
+      var panel = document.createElement("div");
+      panel.style.cssText = "position:fixed;right:10px;bottom:10px;z-index:9999;padding:8px 10px;" +
+        "font:11px/1.5 ui-monospace,Menlo,Consolas,monospace;color:#c9f5ff;background:rgba(2,20,30,.72);" +
+        "border:1px solid rgba(120,220,235,.35);border-radius:6px;pointer-events:none;white-space:pre";
+      document.body.appendChild(panel);
+      setInterval(function () {
+        panel.textContent =
+          "WEBGL   " + (contextLost ? "LOST" : "OK") + "\n" +
+          "VIDEO   " + (videoUsable() ? "READY" : (video.error ? "ERROR" : "LOADING")) + "\n" +
+          "TEXTURE " + (oceanU.uHasVideo.value > 0.5 ? "VIDEO" : "PROC") + "\n" +
+          "FONT    " + (document.fonts && document.fonts.status === "loaded" ? "READY" : "…") + "\n" +
+          "RAF     " + frames + "f / " + (raf ? "RUNNING" : "STOPPED") + "\n" +
+          "SCENE   " + S.toFixed(2);
+      }, 500);
+    }
+
     window.addEventListener("pagehide", function () {
-      renderer.dispose();
-      rt.dispose();
-      vtex.dispose();
-      oceanMat.dispose();
+      stopLoop();
+      try {
+        renderer.dispose();
+        rt.dispose();
+        vtex.dispose();
+        oceanMat.dispose();
+      } catch (e) {}
     });
   }
 
