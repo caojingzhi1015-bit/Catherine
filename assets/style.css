@@ -1036,6 +1036,23 @@ body:not(.subpage):not(.case-page) .masthead:not(.is-stuck) .masthead__nav a { o
 }
 .folio__item:hover .folio__go { color: var(--accent); transform: translateX(6px); }
 
+/* 作品卡片预览缩略图：轻量 WebP，不进子页也能直接看到内容 */
+.folio__preview {
+  display: block;
+  width: 100%;
+  height: clamp(92px, 9vw, 132px);
+  object-fit: cover;
+  object-position: 50% 32%;
+  border-radius: 3px;
+  margin-top: clamp(12px, 1.4vw, 18px);
+  opacity: .88;
+  transition: opacity .5s var(--ease), transform .6s var(--ease);
+}
+.folio__item:hover .folio__preview { opacity: 1; transform: scale(1.015); }
+@media (max-width: 1246px) {
+  .folio__preview { height: clamp(120px, 17vw, 190px); }
+}
+
 /* ── 12. SKILLS（关键词 + 漂浮文字） ─────────────────────────── */
 .skills {
   position: relative;
